@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="user-scalable=0" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
+
+    <script src="map.js" defer></script>
+    <script src="pipui.js" defer></script>
+    <script src="events.js" defer></script>
+    <script src="PZImage.js" defer></script>
+    <script src="main.js" defer></script>
+    <script src="customInput.js" defer></script>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <title>Fallout 4 Guesser</title>
+</head>
+<body>
+
+    <button id="btnToggle" onclick="pipToggleVisible()">toggle</button>
+    <canvas id="cnvGuess" width="1920" height="1080"></canvas>
+    
+    <div id="dvPipboy">
+        <canvas id="cnvPipboy" width="1482" height="1355"></canvas>
+
+        <div id="dvPBScreen">
+            <div id="dvInvScreen" class="sPipNav">
+                <div id="dvInvTop">
+                    <div id="dvModeSelectionIcons">
+                        <p id="ms1"></p>
+                        <p id="ms2"></p>
+                        <p id="ms3"></p>
+                        <p id="ms4"></p>
+                    </div>
+                    <div id="dvInvModes">
+                        <button id="btnModeNormal" class="pipButton">Normal</button>
+                        <button id="btnModeEndless" class="pipButton">Endless</button>
+                        <button id="btnModeSurvival" class="pipButton">Survival</button>
+                        <button id="btnModeCustom" class="pipButton">Custom</button>
+                    </div>
+                    <div id="dvInfoNormal" class="dvModeInfo">
+                        <p>
+                            A game of 5 rounds lasting 60 seconds each<br>
+                            Try to score as many points as possible
+                        </p>
+                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('normal')">Start Game</button>
+                    </div>
+                    <div id="dvInfoEndless" class="dvModeInfo">
+                        <p>
+                            Unlimited rounds and no time or score limit<br>
+                            Play as long as you like
+                        </p>
+                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('endless')">Start Game</button>
+                    </div>
+                    <div id="dvInfoSurvival" class="dvModeInfo">
+                        <p>
+                            Unlimited rounds. Start with 10,000 points which decay faster as you survive longer<br>
+                            Make guesses to earn points back
+                        </p>
+                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('survival')">Start Game</button>
+                    </div>
+                    <div id="dvInfoCustom" class="dvModeInfo">
+                        <p>
+                            Set your own game rules with the options below, or copy a code into the box here
+                        </p>
+                        <span>
+                            <p class="inputStart">></p>
+                            <input id="shareCodeInput"  class="inputLong"type="text" placeholder="Enter code">
+                        </span>
+                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('custom')">Start Game</button>
+                    </div>
+                </div>
+                <div id="dvCustomSettings">
+                    <div id="dvCustomLabels">
+                        <label for="paramRounds">Rounds per game </label>
+                        <label for="paramTimeLimit">Time limit per round (seconds) </label>
+                        <label for="paramMinScore">Minimum score to pass the round </label>
+                        <label for="paramMinDifficulty">Min difficulty </label>
+                        <label for="paramMaxDifficulty">Max difficulty </label>
+                        <label for="paramSeed">Seed (min 3 digits recommended)</label>
+                    </div>
+                    <div id="dvCustomParameters">
+                        <span>
+                            <p class="inputStart">></p>
+                            <input id="paramRounds" class="inputMed" type="text" value="5" min="0" max="638" placeholder="Unlimited">
+                        </span>
+                        
+                        <span>
+                            <p class="inputStart">></p>
+                            <input id="paramTimeLimit" class="inputMed" type="text" value="60" min="0" max="600" placeholder="Unlimited">
+                        </span>
+                        <span>
+                            <p class="inputStart">></p>
+                            <input id="paramMinScore" class="inputMed" type="text" min="0" max="5000" placeholder="None">
+                        </span>
+                        <span>
+                            <p class="inputStart">v</p>
+                            <select id="paramMinDifficulty" class="inputSelect">
+                                <option value="0" selected>Easy</option>
+                                <option value="1">Medium</option>
+                                <option value="2">Hard</option>
+                            </select>
+                        </span>
+                        <span>
+                            <p class="inputStart">v</p>
+                            <select id="paramMaxDifficulty" class="inputSelect">
+                                <option value="0">Easy</option>
+                                <option value="1">Medium</option>
+                                <option value="2" selected>Hard</option>
+                            </select>
+                        </span>
+                        <span>
+                            <p class="inputStart">></p>
+                            <input id="paramSeed" class="inputMed" type="text" min="0" max="2147483648" placeholder="Random">
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <div id="dvGameInfo">
+                <p id="pRoundCount"></p>
+                <p id="pTimer"></p>
+                <p id="pMinScore"></p>
+                <p id="pSurvivalScore"></p>
+            </div>
+
+            <p id="pCurrentScore"></p>
+
+            <div id="dvMapScreen" class="sPipNav">
+                <div id="dvMap"></div>
+            </div>
+
+            <div id="dvDataScreen" class="sPipNav">
+                <ul id="roundResults">
+
+                </ul>
+            </div>
+
+            <div id="dvGameButtons">
+                <button id="btnReady" class="pipButton" onclick="ready()">Start</button>
+                <button id="btnConfirmGuess" class="pipButton" onclick="confirmGuess()">Confirm Guess</button>
+                <button id="btnNextRound" class="pipButton" onclick="nextRound()">Next Round</button>
+                <button id="btnShowSummary" class="pipButton" onclick="enableSummary();">Show Summary</button>
+                <button id="btnRepeatGame" class="pipButton" onclick="newGame(false)">Repeat Game (same seed)</button>
+                <button id="btnNewGame" class="pipButton" onclick="newGame(true)">New Game (random seed)</button>
+                <button id="btnEndData" class="pipButton" onclick="pipNavChange('data')">View Game Data</button>
+            </div>
+        </div>
+
+        <div id="dvPBNav">
+            <button id="btnInv" class="btnNav" onclick="pipNavChange('inv')"></button>
+            <button id="btnData" class="btnNav" onclick="pipNavChange('data')"></button>
+            <button id="btnMap" class="btnNav" onclick="pipNavChange('map')"></button>
+        </div>
+    </div>
+
+    
+    
+</body>
+</html>
