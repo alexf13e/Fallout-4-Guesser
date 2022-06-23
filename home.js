@@ -35,5 +35,5 @@ function startGame()
     localStorage.setItem("screenType", slScreen.value);
     localStorage.setItem("unitType", slUnitType.value);
 
-    window.location.href = "/game.html";
+    window.location.href = "game.html";
 }
