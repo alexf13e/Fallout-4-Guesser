@@ -16,7 +16,8 @@ function validateInput(event)
 
     if (!(charCode > 31 && (charCode < 48 || charCode > 57)))
     {
-        event.target.value = oldValue.slice(0, event.target.selectionStart) + String.fromCharCode(charCode) + oldValue.slice(event.target.selectionStart);
+        event.target.value = oldValue.slice(0, event.target.selectionStart) + 
+        String.fromCharCode(charCode) + oldValue.slice(event.target.selectionStart);
         event.target.selectionStart = oldSelection + 1;
         event.target.selectionEnd = event.target.selectionStart;
         event.target.setCustomValidity("");
@@ -27,7 +28,6 @@ function validateInput(event)
         event.target.setCustomValidity("Please only enter numbers");
         event.target.reportValidity();
     }
-    
 }
 
 function validateRange(event, min, max)
@@ -114,47 +114,30 @@ function updateDifficultySelects(event)
     }
 }
 
-function readShareCode(event)
+function readShareCode()
 {
-    let code = event.target.value;
+    let code = inpShareCode.value;
 
     if (code == "")
     {
-        event.target.setCustomValidity("");
-        event.target.reportValidity();
+        inpShareCode.setCustomValidity("");
+        inpShareCode.reportValidity();
+        inpShareCode.style.borderBottom = "solid rgb(20, 255, 23) 3px";
         return;
     }
 
-    if (code.length != 22)
+    if (!validateShareCode(code))
     {
-        event.target.setCustomValidity("Invalid Code");
-        event.target.reportValidity();
+        inpShareCode.setCustomValidity("Invalid Code");
+        inpShareCode.reportValidity();
+        inpShareCode.style.borderBottom = "solid rgb(225, 93, 61) 3px";
         return;
-    }    
+    }
 
-    let codeRounds = code.slice(0, 3);
-    let codeTimeLimit = code.slice(3, 6);
-    let codeMinScore = code.slice(6, 10);
-    let codeMinDifficulty = code.slice(10, 11);
-    let codeMaxDifficulty = code.slice(11, 12);
-    let codeSeed = code.slice(12, 22);
-
-    if (!( validateShareCode(codeRounds, paramRounds)
-        && validateShareCode(codeTimeLimit, paramTimeLimit)
-        && validateShareCode(codeMinScore, paramMinScore)
-        && validateShareCodeDifficulty(codeMinDifficulty, paramMinDifficulty)
-        && validateShareCodeDifficulty(codeMaxDifficulty, paramMaxDifficulty)
-        && codeMinDifficulty <= codeMaxDifficulty
-        && validateShareCode(codeSeed, paramSeed)))
-        {
-            event.target.setCustomValidity("Invalid Code");
-            event.target.reportValidity();
-            return;
-        }
-
-
-    event.target.setCustomValidity("");
-    event.target.reportValidity();
+    //Sharecode is valid
+    inpShareCode.setCustomValidity("");
+    inpShareCode.reportValidity();
+    inpShareCode.style.borderBottom = "solid rgb(20, 255, 23) 3px";
 
     paramRounds.value = (parseInt(codeRounds) == 0 ? "" : parseInt(codeRounds).toString()); //get rid of extra 0s
     paramTimeLimit.value = (parseInt(codeTimeLimit) == 0 ? "" : parseInt(codeTimeLimit).toString());
@@ -164,12 +147,32 @@ function readShareCode(event)
     paramSeed.value = parseInt(codeSeed).toString();
 }
 
-function validateShareCode(val, param)
+function validateShareCode(code)
+{
+    let codeRounds = code.slice(0, 3);
+    let codeTimeLimit = code.slice(3, 6);
+    let codeMinScore = code.slice(6, 10);
+    let codeMinDifficulty = code.slice(10, 11);
+    let codeMaxDifficulty = code.slice(11, 12);
+    let codeSeed = code.slice(12, 22);
+
+    //True when share code is valid
+    return (code.length == 22
+        && validateSCVal(codeRounds, paramRounds)
+        && validateSCVal(codeTimeLimit, paramTimeLimit)
+        && validateSCVal(codeMinScore, paramMinScore)
+        && validateSCDifficulty(codeMinDifficulty)
+        && validateSCDifficulty(codeMaxDifficulty)
+        && codeMinDifficulty <= codeMaxDifficulty
+        && validateSCVal(codeSeed, paramSeed));
+}
+
+function validateSCVal(val, param)
 {
     return parseInt(val) >= parseInt(param.min) && parseInt(val) <= parseInt(param.max);
 }
 
-function validateShareCodeDifficulty(val, param)
+function validateSCDifficulty(val)
 {
     return parseInt(val) >= 0 && parseInt(val) <= 2;
 }

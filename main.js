@@ -1,4 +1,7 @@
 ﻿
+//i hope you've got a strong stomach
+
+
 var cnvGuess = document.getElementById("cnvGuess");
 var ctxGuess = cnvGuess.getContext("2d");
 
@@ -6,9 +9,11 @@ var guessImageLoaded = false;
 var guessImage = new Image();
 guessImage.onload = function()
 {
+    window.clearTimeout(errorImageTimeout);
+
     if (pzGuessImage == undefined)
     {
-        pzGuessImage = new PZImage(guessImage, cnvGuess, 6);
+        pzGuessImage = new PZImage(guessImage, cnvGuess, 4);
     }
 
     if (guessImageAnimFrame != undefined)
@@ -16,18 +21,15 @@ guessImage.onload = function()
         cancelAnimationFrame(guessImageAnimFrame);
     }
 
-    if (playerReady && !cnvTransitioning)
-    {
-        cnvGuess.style.opacity = "1";
-    }
-
-    drawGuessImage();
-
     guessImageLoaded = true;
+    showGuessImage();
 
     beginRoundTimer(); //try to start round timer each round. won't start when first loaded since player won't be ready
     beginScoreDecay();
 };
+
+var errorImage = new Image();
+errorImage.src = "./assets/psb.jpg";
 
 var allImageData;
 var currentImageData;
@@ -93,19 +95,20 @@ var roundTimerUpdateTimeout;
 var remainingTime;
 var scoreDecayPerSecond = 100;
 var scoreDecayUpdateTimeout;
+var errorImageTimeout;
 
 var playerReady = false;
 var gameLocationSummary = [];
 var totalScore = 0;
 var totalTime = 0;
 var totalDistance = 0;
-var scoreStrictness = 0.0174; //gives about 1000 points at 100m, and 0 points at 500m. Could be changed for difficulty balance
+var scoreStrictness = -3.9; /*Could be changed for difficulty balance https://www.desmos.com/calculator/nvdbx3r4qx */
 var survivalStartingScore = 10000;
 var survivalPeakScore = 0;
 var gameOverMessage;
 var genericDeathMessages = [
     "you starved to death",
-    "you died of thirst",
+    "you died of dehydration",
     "you were kidnapped by the institute, never to be seen again",
     "you died to an infection"
 ];
@@ -137,14 +140,17 @@ function createAnswerArray(text)
 
 function updateImage()
 {
+    hideGuessImage();
+
+    //get data about image
     currentImageData = allImageData[randomisedImageOrder[roundNumber - 1]];
-    //set opacity for nice transition
     guessImageLoaded = false;
-    cnvGuess.style.opacity = "0";
     guessImage.src = imageDir + currentImageData.src;
 
     //update pipboy rads and difficulty
     pipDraw();
+
+    errorImageTimeout = window.setTimeout(showErrorImage, 5000);
 }
 
 function initialiseGame(mode)
@@ -302,9 +308,10 @@ function ready()
     pipSetVisible(false);
     pipNavChange("map");
     
+    showGuessImage();
+
     if (guessImageLoaded)
     {
-        cnvGuess.style.opacity = "1";
         pzGuessImage.resetPos();
         beginRoundTimer();
         beginScoreDecay();
@@ -341,7 +348,7 @@ function confirmGuess()
     pipNavChange("map");
 
     var score = 0;
-    var gamerScore = false;
+    var gamer = false;
 
     var answerPosMap = worldToMapPos(currentImageData.pos);
     answerMarker = mapCreateAnswerMarker(answerPosMap).addTo(map);
@@ -364,17 +371,18 @@ function confirmGuess()
         var maxScore = 5000;
         var perfectDist = 5;
 
-        /*score on an exponentially decreasing curve, tuned to cross maxScore at perfectDist metres, and decay with scoreStrictness
-        e.g. currently you will get 5000 points at 5 metres away, any closer and the extra points get constrained back to 5000.
-        scoreStrictness is set to what i felt was fair for the size of the map (about 500m away stops giving points)*/
-        score = maxScore * Math.exp(-scoreStrictness * (distanceMetres - perfectDist));
+        //Score on a quadratic curve which seemed about reasonable for how difficult I want it to be
+        //https://www.desmos.com/calculator/nvdbx3r4qx (b is scoreStrictness)
+        var a = -(maxScore + 495 * scoreStrictness)/249975;
+        var c = maxScore - perfectDist * perfectDist * a - perfectDist * scoreStrictness;
+        score = a * distanceMetres * distanceMetres + scoreStrictness * distanceMetres + c;
         score = Math.floor(Math.max(Math.min(maxScore, score), 0)); //constrain score between 0 and maxscore
 
         if (distanceMetres < 1)
         {
-            //for the true gamers
+            //for the real gamers
             score += 1;
-            gamerScore = true;
+            gamer = true;
         }
     
         distMessage = formatDistance(distanceMetres);
@@ -391,12 +399,14 @@ function confirmGuess()
     }
 
     var roundText = roundNumber + ": " + score + " points (" + distMessage + ")";
-    addMessage(roundText, gamerScore);
+    addMessage(roundText, gamer);
 
     totalScore += score;
     totalTime += (Date.now() - roundStartTime) / 1000;
 
-    updateCurrentScoreDisplay(score, gamerScore);
+    updateCurrentScoreDisplay(score, gamer);
+
+    guessPlaced = false;
 
     //update peak score stat
     if (gameParameters.survival)
@@ -437,7 +447,6 @@ function confirmGuess()
 function nextRound()
 {
     //reset some of the game state for a new round
-    guessPlaced = false;
     guessConfirmed = false;
     
     roundNumber = (roundNumber + 1) % (gameParameters.rounds + 1);
@@ -445,6 +454,7 @@ function nextRound()
     {
         roundNumber = 1;
         addMessage("All images complete, re-randomisng order", false);
+        generateSeed();
         createRandomImageOrder();
     }
 
@@ -508,13 +518,15 @@ function enableSummary()
     gameEnded = true;
     btnShowSummary.style.display = "none";
     btnEndData.style.display = "block";
-    pCurrentScore.innerHTML = "";
+    pCurrentScore.innerHTML = "Game Summary";
     
     addMessage("<br>"); //add an empty line for readability
     addMessage(gameOverMessage, false);
     addMessage("Total Time: " + formatTimeString(totalTime), false);
     addMessage("Total Distance Away: " + formatDistance(totalDistance), false);
     if (gameParameters.survival) addMessage("Peak score: " + survivalPeakScore);
+
+    hideGuessImage();
 
     mapDefaultPos();
     mapClear();
@@ -614,6 +626,12 @@ function updateRoundTimer()
     pTimer.innerHTML = "Time: " + formatTimeString(remainingTime);
 
     roundTimerUpdateTimeout = window.setTimeout(updateRoundTimer, 100);
+
+    //yes events i know but this is easier for now in case theres both a timer and score decay
+    if (remainingTime < 15 && !buttonFlashing && !pipVisible)
+    {
+        flashButtonOn();
+    }
 }
 
 function beginScoreDecay()
@@ -640,6 +658,11 @@ function updateScoreDecay()
         var updateDelay = Math.min(100, totalScore/scoreDecayPerSecond * 1000);
         scoreDecayUpdateTimeout = window.setTimeout(updateScoreDecay, updateDelay);
     }
+
+    if (totalScore < 2500 && !buttonFlashing && !pipVisible)
+    {
+        flashButtonOn();
+    }
 }
 
 function clearTimeouts()
@@ -647,6 +670,9 @@ function clearTimeouts()
     window.clearTimeout(roundTimerTimeout);
     window.clearTimeout(roundTimerUpdateTimeout);
     window.clearTimeout(scoreDecayUpdateTimeout);
+    window.clearTimeout(buttonFlashTimeout);
+    buttonFlashing = false;
+    drawToggleButton();
 }
 
 function createGameCode()
@@ -662,18 +688,38 @@ function createGameCode()
 
 function formatDistance(metres)
 {
-    //convert a number of metres to a nice string representation
+    //convert a number of metres to a nice string representation with the preferred unit
     var message;
-    if (metres > 1000)
+
+    if (localStorage.getItem("unitType") == "metric")
     {
-        metres = (metres / 1000).toPrecision(3);
-        message = metres + "km";
+        if (metres > 1000)
+        {
+            metres = (metres / 1000).toPrecision(3);
+            message = metres + "km";
+        }
+        else
+        {
+            metres = metres.toPrecision(3);
+            message = metres + "m";
+        }
     }
     else
     {
-        metres = metres.toPrecision(3);
-        message = metres + "m";
+        var yards = metres * 1.09361;
+        /*feels weird to write over 1000 as yards rather 0.x miles, but i'm not
+        sure if theres some convention for when to use which. the mess of imperial
+        and metric in this country doesnt help*/
+        if (yards > 1000)
+        {
+            message = (yards / 1760).toPrecision(3) + " miles";
+        }
+        else
+        {
+            message = yards.toPrecision(3) + " yards"
+        }
     }
+    
 
     return message;
 }
@@ -713,4 +759,24 @@ function formatTimeString(seconds)
     }
 
     return displayedTime;
+}
+
+function hideGuessImage()
+{
+    if (window.getComputedStyle(cnvGuess).opacity == "1") cnvGuess.style.opacity = "0";
+}
+
+function showGuessImage()
+{
+    if (guessImageLoaded && playerReady && window.getComputedStyle(cnvGuess).opacity == "0")
+    {
+        drawGuessImage();
+        cnvGuess.style.opacity = "1";
+    }
+}
+
+function showErrorImage()
+{
+    cnvGuess.style.opacity = "1";
+    ctxGuess.drawImage(errorImage, 0, 0, cnvGuess.width, cnvGuess.height);
 }

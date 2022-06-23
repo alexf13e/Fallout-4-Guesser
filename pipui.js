@@ -1,6 +1,9 @@
 
 var cnvPipboy = document.getElementById("cnvPipboy");
 var ctxPipboy = cnvPipboy.getContext("2d");
+
+var cnvToggle = document.getElementById("cnvToggle");
+var ctxToggle = cnvToggle.getContext("2d");
  
 var dvPipboy = document.getElementById("dvPipboy");
  
@@ -77,6 +80,7 @@ btnModeCustom.onclick = () => {
     pipModeInfoChange("custom");
 }
 
+var imToggle = new Image();
 var imPipboy = new Image();
 var imNavInv = new Image();
 var imNavMap = new Image();
@@ -85,6 +89,7 @@ var imRad = new Image();
 var imDif = new Image();
 var imNavCurrent;
 
+imToggle.onload = () => { drawToggleButton(); };
 imPipboy.onload = () => { checkLoadedImages(); };
 imNavInv.onload = () => { checkLoadedImages(); };
 imNavMap.onload = () => { checkLoadedImages(); };
@@ -92,15 +97,33 @@ imNavData.onload = () => { checkLoadedImages(); };
 imRad.onload = () => { checkLoadedImages(); };
 imDif.onload = () => { checkLoadedImages(); };
 
-imPipboy.src = "./assets/pip/pipboy.png";
+imToggle.src = "./assets/pip/pipOutline.png";
 imNavInv.src = "./assets/pip/navInv.png";
 imNavMap.src = "./assets/pip/navMap.png";
 imNavData.src = "./assets/pip/navData.png";
 imRad.src = "./assets/pip/rad.png";
 imDif.src = "./assets/pip/dif.png";
 
+switch (localStorage.getItem("screenType"))
+{
+    case "dirt1":
+        imPipboy.src = "./assets/pip/pipboyfdirt.png";
+        break;
+    
+    case "dirt2":
+        imPipboy.src = "./assets/pip/pipboyndirt.png";
+        break;
+    
+    case "clean":
+        imPipboy.src = "./assets/pip/pipboyclean.png";
+        break;
+}
+
+
 var loadedCount = 0;
 var pipVisible = true
+var buttonFlashTimeout;
+var buttonFlashing = false;
 
 function checkLoadedImages()
 {
@@ -120,14 +143,18 @@ function pipToggleVisible()
 function pipSetVisible(desiredVis)
 {
     //if desiredVis is true, make pipboy visible
-    dvPipboy.style.left = desiredVis ? "5%" : "-80%";
+    dvPipboy.style.left = desiredVis ? "5%" : "-100%";
     pipVisible = desiredVis;
+    cnvGuess.style.filter = pipVisible ? "blur(5px)" : "none";
+    cnvGuess.style.pointerEvents = pipVisible ? "none" : "auto";
+    window.clearTimeout(buttonFlashTimeout);
+    drawToggleButton();
 }
 
 function pipNavChange(screen)
 {
     //show appropriate div for the selected screen
-    dvInvScreen.style.display = (screen == "inv") ? "grid" : "none";
+    dvInvScreen.style.display = (screen == "inv") ? "block" : "none";
     dvDataScreen.style.display = (screen == "data") ? "block" : "none";
     dvMapScreen.style.display = (screen == "map") ? "block" : "none";
     dvGameInfo.style.display = ((screen == "data" || screen == "map") && (!guessConfirmed || gameParameters.survival)) ? "grid" : "none";
@@ -148,13 +175,15 @@ function pipNavChange(screen)
         
         case "map":
             if (!map) mapInit();
-            map.invalidateSize();  //in case window is resized while map is hidden (will stop loading tiles properly)
+            map.invalidateSize();  /*map will stop loading tiles properly if this is
+                                    not called and the window is resized while the map is hidden*/
             imNavCurrent = imNavMap; 
             pipDraw();
             break;
         
         case "data":
-            imNavCurrent = imNavData; 
+            imNavCurrent = imNavData;
+            //scroll to bottom of game data to show most relevant info
             roundResultsList.scrollTop = roundResultsList.scrollHeight;
             pipDraw();
             break;
@@ -169,6 +198,7 @@ function pipModeInfoChange(mode)
     dvInfoSurvival.style.display = (mode == "survival") ? "block" : "none";
     dvInfoCustom.style.display = (mode == "custom") ? "block" : "none";
 
+    //even with "render as text" unicode char, ▪ still shows as emoji on mobile so idk
     ms1.innerHTML = (mode == "normal") ? "▪" : "";
     ms2.innerHTML = (mode == "endless") ? "▪" : "";
     ms3.innerHTML = (mode == "survival") ? "▪" : "";
@@ -177,7 +207,7 @@ function pipModeInfoChange(mode)
 
 function updateRoundCounter()
 {
-    if (gameParameters.showRemainingRounds) pRoundCount.innerHTML = "Round: " + roundNumber + "/" + (roundNumber + roundsRemaining - 1); //dont even worry about it
+    if (gameParameters.showRemainingRounds) pRoundCount.innerHTML = "Round: " + roundNumber + "/" + gameParameters.rounds;
     else pRoundCount.innerHTML = "Round: " + roundNumber;
 }
 
@@ -249,4 +279,37 @@ function d2r(d)
 {
     //convert degrees to radians
     return d / 180 * Math.PI;
+}
+
+
+function drawToggleButton()
+{
+    ctxToggle.clearRect(0, 0, cnvToggle.width, cnvToggle.height);
+    ctxToggle.shadowBlur = 10;
+    ctxToggle.shadowColor = "black";
+    ctxToggle.drawImage(imToggle, 0, 0);
+}
+
+function flashButtonOn()
+{
+    buttonFlashing = true;
+
+    /*conveniently enough, having shadow when drawing the normal image makes the
+    flashing colour look glowy. remember, its only a bug if you cant make up an
+    excuse for why its in the program*/
+    ctxToggle.shadowBlur = 0;
+    ctxToggle.globalCompositeOperation = "source-in";
+    ctxToggle.fillStyle = "#f9e289";
+    ctxToggle.fillRect(0, 0, cnvToggle.width, cnvToggle.height);
+
+    ctxToggle.globalCompositeOperation = "source-over";
+
+    buttonFlashTimeout = window.setTimeout(flashButtonOff, 750);
+}
+
+function flashButtonOff()
+{
+    drawToggleButton();
+
+    buttonFlashTimeout = window.setTimeout(flashButtonOn, 750);
 }

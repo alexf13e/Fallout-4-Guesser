@@ -1,5 +1,4 @@
 var guessImageDragging = false;
-var cnvTransitioning = false;
 
 cnvGuess.addEventListener("mousedown", (event) => {
     if (!guessImageLoaded) return;
@@ -30,16 +29,11 @@ cnvGuess.addEventListener("mouseleave", () => {
     if (guessImageDragging && playerReady) document.body.style.cursor = "grabbing";
 });
 
-cnvGuess.addEventListener("transitionstart", () => {
-    cnvTransitioning = true;
-});
-
-cnvGuess.addEventListener("transitionend", () => {
-    cnvTransitioning = false;
-    if (guessImageLoaded && playerReady)
+//Automatically try to show the image again if it became ready during the transition away
+cnvGuess.addEventListener("transitionend", (event) => {
+    if (event.propertyName == "opacity" && window.getComputedStyle(cnvGuess).opacity == "0" && !gameEnded)
     {
-        pzGuessImage.draw(ctxGuess);
-        cnvGuess.style.opacity = "1";
+        showGuessImage();
     }
 });
 
@@ -61,15 +55,43 @@ window.addEventListener("mouseup", (event) => {
     }
 });
 
-document.onkeydown = (e) => {
-    if (e.key == "h") pipSetVisible(false);
-};
+window.addEventListener("keyup", (event) => {
+    if (event.key == "Shift") pipToggleVisible();
+    if (event.key == " ")
+    {
+        if (window.getComputedStyle(btnConfirmGuess).display == "block" && !btnConfirmGuess.disabled)
+        {
+            confirmGuess();
 
-document.onkeyup = (e) => {
-    if (e.key == "h") pipSetVisible(true);
-};
+            /*block space from clicking a focused element only if it is likely the player wants
+            to use space to for a shortcut (though i doubt anyone would be playing keyboard
+            only and need to click with it)*/
+            event.preventDefault();
+        }
+        else if (window.getComputedStyle(btnNextRound).display == "block")
+        {
+            nextRound();
+            event.preventDefault();
+        }
+    }
+});
+
+window.addEventListener("keypress", (event) => {
+    if (event.key == " ")
+    {
+        if ((window.getComputedStyle(btnConfirmGuess).display == "block" && !btnConfirmGuess.disabled) || window.getComputedStyle(btnNextRound).display == "block" )
+        {
+            //see keyup event, need to block both that and keypress
+            event.preventDefault();
+        }
+    }
+});
 
 
+/*right this is probably a terrible way of doing things, but basically i want
+to restrict what can be typed into the boxes so it's obvious and nice to deal with
+when the player enters unacceptable values, and they are automatically fitted to
+the limit they exceed. see customInput.js*/
 let inputs = document.getElementsByTagName("input");
 
 for (let i = 0; i < inputs.length; i++)
@@ -109,6 +131,6 @@ inpShareCode.addEventListener("paste", (event) => {
     }
 });
 
-inpShareCode.addEventListener("keyup", (event) => {
-    readShareCode(event);
+inpShareCode.addEventListener("keyup", () => {
+    readShareCode();
 });

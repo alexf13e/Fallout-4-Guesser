@@ -15,159 +15,202 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
 
-    <script src="map.js" defer></script>
-    <script src="pipui.js" defer></script>
-    <script src="events.js" defer></script>
-    <script src="PZImage.js" defer></script>
-    <script src="main.js" defer></script>
-    <script src="customInput.js" defer></script>
+    <script src="home.js" defer></script>
 
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="home.css" />
 
     <title>Fallout 4 Guesser</title>
 </head>
 <body>
+    <div id="dvBackground"></div>
 
-    <button id="btnToggle" onclick="pipToggleVisible()">toggle</button>
-    <canvas id="cnvGuess" width="1920" height="1080"></canvas>
-    
-    <div id="dvPipboy">
-        <canvas id="cnvPipboy" width="1482" height="1355"></canvas>
-
-        <div id="dvPBScreen">
-            <div id="dvInvScreen" class="sPipNav">
-                <div id="dvInvTop">
-                    <div id="dvModeSelectionIcons">
-                        <p id="ms1"></p>
-                        <p id="ms2"></p>
-                        <p id="ms3"></p>
-                        <p id="ms4"></p>
-                    </div>
-                    <div id="dvInvModes">
-                        <button id="btnModeNormal" class="pipButton">Normal</button>
-                        <button id="btnModeEndless" class="pipButton">Endless</button>
-                        <button id="btnModeSurvival" class="pipButton">Survival</button>
-                        <button id="btnModeCustom" class="pipButton">Custom</button>
-                    </div>
-                    <div id="dvInfoNormal" class="dvModeInfo">
-                        <p>
-                            A game of 5 rounds lasting 60 seconds each<br>
-                            Try to score as many points as possible
-                        </p>
-                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('normal')">Start Game</button>
-                    </div>
-                    <div id="dvInfoEndless" class="dvModeInfo">
-                        <p>
-                            Unlimited rounds and no time or score limit<br>
-                            Play as long as you like
-                        </p>
-                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('endless')">Start Game</button>
-                    </div>
-                    <div id="dvInfoSurvival" class="dvModeInfo">
-                        <p>
-                            Unlimited rounds. Start with 10,000 points which decay faster as you survive longer<br>
-                            Make guesses to earn points back
-                        </p>
-                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('survival')">Start Game</button>
-                    </div>
-                    <div id="dvInfoCustom" class="dvModeInfo">
-                        <p>
-                            Set your own game rules with the options below, or copy a code into the box here
-                        </p>
-                        <span>
-                            <p class="inputStart">></p>
-                            <input id="shareCodeInput"  class="inputLong"type="text" placeholder="Enter code">
-                        </span>
-                        <button id="btnStartGame" class="pipButton" onclick="initialiseGame('custom')">Start Game</button>
-                    </div>
-                </div>
-                <div id="dvCustomSettings">
-                    <div id="dvCustomLabels">
-                        <label for="paramRounds">Rounds per game </label>
-                        <label for="paramTimeLimit">Time limit per round (seconds) </label>
-                        <label for="paramMinScore">Minimum score to pass the round </label>
-                        <label for="paramMinDifficulty">Min difficulty </label>
-                        <label for="paramMaxDifficulty">Max difficulty </label>
-                        <label for="paramSeed">Seed (min 3 digits recommended)</label>
-                    </div>
-                    <div id="dvCustomParameters">
-                        <span>
-                            <p class="inputStart">></p>
-                            <input id="paramRounds" class="inputMed" type="text" value="5" min="0" max="638" placeholder="Unlimited">
-                        </span>
-                        
-                        <span>
-                            <p class="inputStart">></p>
-                            <input id="paramTimeLimit" class="inputMed" type="text" value="60" min="0" max="600" placeholder="Unlimited">
-                        </span>
-                        <span>
-                            <p class="inputStart">></p>
-                            <input id="paramMinScore" class="inputMed" type="text" min="0" max="5000" placeholder="None">
-                        </span>
-                        <span>
-                            <p class="inputStart">v</p>
-                            <select id="paramMinDifficulty" class="inputSelect">
-                                <option value="0" selected>Easy</option>
-                                <option value="1">Medium</option>
-                                <option value="2">Hard</option>
-                            </select>
-                        </span>
-                        <span>
-                            <p class="inputStart">v</p>
-                            <select id="paramMaxDifficulty" class="inputSelect">
-                                <option value="0">Easy</option>
-                                <option value="1">Medium</option>
-                                <option value="2" selected>Hard</option>
-                            </select>
-                        </span>
-                        <span>
-                            <p class="inputStart">></p>
-                            <input id="paramSeed" class="inputMed" type="text" min="0" max="2147483648" placeholder="Random">
-                        </span>
-                    </div>
-                </div>
-            </div>
-
+    <div id="dvMenuBorder" class="menuItemBorder"></div>
+    <div id="dvMenu" class="menuItem">
+        <button id="btnStartGame" class="menuButton" onclick="startGame();">Start Game</button>
+        <button id="btnOptions" class="menuButton" onclick="toggleOptions();">Options</button>
+        
+        <div id="dvOptions">
+            <label for="slMap">Map Type</label>
+            <span>
+                <p class="inputStart">v</p>
+                <select id="slMap">
+                    <option value="satellite" selected>Satellite</option>
+                    <option value="ingame">In-game</option>
+                </select>
+            </span>
             
+            <label for="slDirt">Pip-Boy screen dirt</label>
+            <span>
+                <p class="inputStart">v</p>
+                <select id="slScreen">
+                    <option value="dirt1" selected>Fancy dirt</option>
+                    <option value="dirt2">Regular dirt</option>
+                    <option value="clean">Clean</option>
+                </select>
+            </span>
 
-            <div id="dvGameInfo">
-                <p id="pRoundCount"></p>
-                <p id="pTimer"></p>
-                <p id="pMinScore"></p>
-                <p id="pSurvivalScore"></p>
-            </div>
-
-            <p id="pCurrentScore"></p>
-
-            <div id="dvMapScreen" class="sPipNav">
-                <div id="dvMap"></div>
-            </div>
-
-            <div id="dvDataScreen" class="sPipNav">
-                <ul id="roundResults">
-
-                </ul>
-            </div>
-
-            <div id="dvGameButtons">
-                <button id="btnReady" class="pipButton" onclick="ready()">Start</button>
-                <button id="btnConfirmGuess" class="pipButton" onclick="confirmGuess()">Confirm Guess</button>
-                <button id="btnNextRound" class="pipButton" onclick="nextRound()">Next Round</button>
-                <button id="btnShowSummary" class="pipButton" onclick="enableSummary();">Show Summary</button>
-                <button id="btnRepeatGame" class="pipButton" onclick="newGame(false)">Repeat Game (same seed)</button>
-                <button id="btnNewGame" class="pipButton" onclick="newGame(true)">New Game (random seed)</button>
-                <button id="btnEndData" class="pipButton" onclick="pipNavChange('data')">View Game Data</button>
-            </div>
+            <label for="slUnits">Measurements</label>
+            <span>
+                <p class="inputStart">v</p>
+                <select id="slUnitType">
+                    <option value="metric" selected>Metric</option>
+                    <option value="imperial">Imperial</option>
+                </select>
+            </span>
         </div>
 
-        <div id="dvPBNav">
-            <button id="btnInv" class="btnNav" onclick="pipNavChange('inv')"></button>
-            <button id="btnData" class="btnNav" onclick="pipNavChange('data')"></button>
-            <button id="btnMap" class="btnNav" onclick="pipNavChange('map')"></button>
-        </div>
     </div>
 
-    
-    
+    <div id="dvInfoBorder" class="menuItemBorder"></div>
+    <div id="dvInfo" class="menuItem">
+        <h1>About</h1>
+        <p>
+            Figure out where an image was taken in the world of Fallout 4 and get
+            a score out of 5000 based on how close you are.
+            <br><br>
+            "Inspired" by these games (mainly gtaguessr for showing me the concept
+            is actually fun and worth pursuing for other games):<br>
+            <a href="https://www.geoguessr.com" target="_blank" rel="noreferrer noopener">https://www.geoguessr.com</a><br>
+            <a href="https://gtaguessr.com" target="_blank" rel="noreferrer noopener">https://gtaguessr.com</a>
+        </p>
+        <br>
+        <h1>Controls</h1>
+        <p>
+            Scroll to zoom, click and drag to pan - works for the map and game
+            image.<br>
+            Click on the map to place your guess.<br>
+            Shortcuts: Space to confirm a guess and move to the next round, shift
+            to show/hide the Pip-Boy
+        </p>
+        <br>
+        <h1>Please don't sue me Todd</h1>
+        <p>
+            This is a fan made game. I am in no way related to Bethesda.
+        </p>
+        <br>
+        <h1>Credits</h1>
+        <ul>
+            <li>Bethesda, for making Fallout 4. The waypoint markers and Pip-Boy were
+                traced/had images taken directly from in-game, and the in-game map and
+                page background were taken from the game too.</li>
+            <li><a href="https://leafletjs.com/" target="_blank" rel="noreferrer noopener">Leaflet.js</a> for the really
+                good map library used which is far nicer than the way I was doing
+                it before - just dragging a single giant image around</li>
+            <li>Emil, for creating the fancy dirt texture, telling me how web things
+                work and testing the game.</li>
+            <li><a href="https://www.reddit.com/user/According-Ad-8181/" target="_blank" rel="noreferrer noopener">u/According-Ad-8181</a>,
+                for telling me about the <a href="https://github.com/fo76utils/fo76utils" target="_blank" rel="noreferrer noopener">fo76utils tool</a>
+                for getting a good quality satellite map image, and helping me get
+                started using it</li>
+            <li>Me, for taking the in-game images, editing images game assets
+                (Pip-Boy, waypoint markers), stealing ideas from other games,
+                and writing most of the code (though I probably don't want to
+                take credit for that). The rest of the code was probably copied
+                from stackoverflow or something I can't remember
+            </li>
+        </ul>
+        <br>
+
+        <h1>Known Bugs</h1>
+        <ul>
+            <li>Some cars, metal crates and tarp cover things are not the right colour
+                in the satellite map (e.g. some red tarps are blue, some rusty cars
+                don't show rust, some orange crates are red)</li>
+            <li>The satellite map has 3 USS Constitutions (one at the skyscraper, one
+                at the bank where it starts, and for some reason one slightly in front
+                of the bank?)</li>
+            <li>Not really a bug (by me at least) but the in-game map is quite inaccurate
+                in some places. Also sometimes the in-game map flies to the side
+                while zooming.</li>
+        </ul>
+        <br>
+
+        <h1>Updates</h1>
+        1.5 - 23rd June 2022
+        <ul>
+            <li>Right where do I even start</li>
+            <li>New map system using <a href="https://leafletjs.com/" target="_blank" rel="noreferrer noopener">Leaflet.js</a>, 
+                which is far nicer and allows for a more detailed map without
+                crippling performance</li>
+            <li>Moved to github to support the new map system, which due to technical
+                limitations couldn't be used (easily) on itch.io.
+                <a href="https://alexf13.itch.io/fallout-4-guesser" target="_blank" rel="noreferrer noopener"> The old 
+                version is still there if you want though.</a></li>
+            <li>Completely re-made the game ui to actually look ok. Based around
+                the Pip-Boy to try and feel more in-universe</li>
+            <li>Changed the survival mode, so now you start with some points
+                which drain over time. Earn them back with guesses and try to
+                last as many rounds as possible. The points start draining faster
+                as rounds progress, but the rate caps at a level I was just about
+                capable of sustaining</li>
+            <li>Added difficulty options to the custom mode, so you can have
+                harder or easier images to your preference. Note that the difficulty
+                is almost entirely subjective and decided by me, based roughly
+                on factors such as:
+                <ul>
+                    <li>Is the location commonly seen (e.g. part of main or
+                        non-radiant side quests</li>
+                    <li>How much distinct information is visible (landmarks,
+                        road structures)</li>
+                    <li>How clear any relevant details are on the map</li>
+                    <li>Is it in the glowing sea - all glowing sea images are
+                        marked as "hard" since they're pretty much impossible
+                        to find on the map if you don't already know where they
+                        are</li>
+                </ul>
+                The preset modes use all images of any difficulty
+            </li>
+        </ul>
+
+
+        1.4.1 - 14th February 2022
+        <ul>
+            <li>Switched over to a more detailed but less nice looking map</li>
+            <li>Added bonus points system for true gamers tm</li>
+            <li>Swapped two buttons around because I felt like it, sorry if
+                you liked how they were before</li>
+            <li>Changed the previous two update notes where I still thought it was 2021</li>
+        </ul>
+
+        1.3.2 - 23rd January 2022
+        <ul>
+            <li>Curb-stomped some radroaches</li>
+        </ul>
+
+        1.3 - 13th January 2022
+        <ul>
+            <li>More images - 636 across the entire map. Could always add
+                more but this took long enough</li>
+            <li>Game-modes
+                <ul>
+                    <li>The previous version of the game is now the "endless" mode</li>
+                    <li>Normal mode - 5 rounds, 60 seconds each</li>
+                    <li>Survival mode - 25 seconds per round, score above 4500 or
+                        you lose. Go for as long as possible</li>
+                    <li>Custom mode - set your own rules for number of rounds,
+                        time per round and minimum score</li>
+                    <li>Copy a code to play a game with the same rules and locations
+                        as someone else</li>
+                </ul>
+            </li>
+            <li>Changed from in-game map to better satellite type one. Despite
+                being the best satellite map I could find online, it was made
+                using low LOD (i.e. far away) models, so there are missing
+                details on the map. I hope to make my own one with the highest
+                LOD, but some testing I have done put an estimate to that being
+                done in forever</li>
+            <li>Further improved performance (should use less resources when
+                not doing anything with the images)</li>
+            <li>Added this update to the updates section of the about text</li>
+            <li>More things I forgot (probably)</li>
+        </ul>
+
+        1.2 - 29th November 2021
+        <ul>
+            <li>Improved screen shape support (21:9 etc.)</li>
+            <li>Added option to show map markers</li>
+            <li>Fixed a bug that slowly ate your GPU</li>
+        </ul>
+    </div>
 </body>
 </html>

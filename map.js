@@ -1,6 +1,9 @@
 
-//512 587 256 (leaflet map) centreOffsetX, centreOffsetY, game units per map unit
-var mapTranslations = [512, 587, 256];
+//centreOffsetX, centreOffsetY, game units per map unit
+//512 587 256 (leaflet map)
+//550.5 425 256 in-game map
+
+var mapTranslations;
 var mapBounds = [[0,0], [1024,1024]];
 var map;
 var wantsReInit = false;
@@ -49,15 +52,31 @@ var destinationIcon = L.icon({
 function mapInit()
 {
     //create map if it hasn't been already, and reset it to a default state
+    switch (localStorage.getItem("mapType"))
+    {
+        case "satellite":
+            mapInitSatellite();
+            break;
+
+        case "ingame":
+            mapInitIngame();
+            break;
+    }
+}
+
+function mapInitSatellite()
+{
     if (!map)
     {
+        mapTranslations = [512, 587, 256];
+
         map = L.map("dvMap", {
             crs: L.CRS.Simple,
             minZoom: -2,
             maxZoom: 4,
             zoomSnap: 0.5,
             maxBounds: mapBounds,
-            mapBoundsViscosity: 1
+            maxBoundsViscosity: 0.5
         });
     
         L.TileLayer.gameMap().addTo(map);
@@ -81,6 +100,48 @@ function mapInit()
         summaryMarkers = L.layerGroup();
         map.addLayer(summaryMarkers);
     }
+
+    mapClear();
+    mapDefaultPos();
+}
+
+function mapInitIngame()
+{
+    if (!map)
+    {
+        mapTranslations = [550.6, 598.5, 261.5];
+
+        map = L.map("dvMap", {
+            crs: L.CRS.Simple,
+            minZoom: -2,
+            maxZoom: 3,
+            zoomSnap: 0.5,
+            maxBounds: mapBounds,
+            maxBoundsViscosity: 0.5
+        });
+    
+        L.imageOverlay("./assets/ingameMap.png", mapBounds).addTo(map);
+        map.fitBounds(mapBounds);
+    
+        map.on("click", (event) => {
+            //don't allow guess marker to be placed before round start or after guess made
+            if (!playerReady || guessConfirmed) return;
+    
+            if (guessMarker)
+            {
+                map.removeLayer(guessMarker);
+            }
+        
+            guessMarker = mapCreateGuessMarker(event.latlng).addTo(map);
+            guessPosWorld = mapToWorldPos(event.latlng);
+        
+            updateGuessPos();
+        });
+
+        summaryMarkers = L.layerGroup();
+        map.addLayer(summaryMarkers);
+    }
+
 
     mapClear();
     mapDefaultPos();

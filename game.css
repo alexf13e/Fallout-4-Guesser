@@ -1,3 +1,12 @@
+:root
+{
+    --cPipGreen: rgb(20, 255, 23);
+    --cClear: rgba(0, 0, 0, 0);
+    --cImageShadow: rgba(0, 0, 0, 0.6);
+    --fontSmall: 0.8vw;
+    --fontMed: 1.0vw;
+    --fontBig: 1.4vw;
+}
 
 body
 {
@@ -5,23 +14,44 @@ body
     color: white;
     background-image: url("./assets/bg.png");
     background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
 }
 
 input[type=text]
 {
-    color: rgb(20, 255, 23);
-    background-color: rgba(0, 0, 0, 0);
+    color: var(--cPipGreen);
+    background-color: var(--cClear);
     border: none;
     outline: none;
-    border-bottom: solid rgb(20, 255, 23) 3px;
+    border-bottom: solid var(--cPipGreen) 3px;
     padding-left: 4%;
-    font-size: 0.8vw;
+    font-size: var(--fontSmall);
 }
 
 p
 {
     margin: 0;
     text-align: center;
+}
+
+select
+{
+    color: var(--cPipGreen);
+    background-color: var(--cClear);
+    border: none;
+    outline: none;
+    border-bottom: solid var(--cPipGreen) 3px;
+    padding-left: 3%;
+    font-size: var(--fontSmall);
+    appearance: none;
+    width: 35%;
+}
+
+select > option
+{
+    background-color: black;
+    border-radius: 0;
 }
 
 ul
@@ -34,14 +64,22 @@ ul
 #btnToggle
 {
     position: absolute;
-    width: 50px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
 
-    bottom: 50%;
+    bottom: 10%;
     left: 1%;
 
     writing-mode: sideways-lr;
-    z-index: 2;
+    z-index: 3;
+
+    background-color: var(--cClear);
+    border: none;
+}
+
+#btnToggle:hover
+{
+    cursor: pointer;
 }
 
 #cnvGuess
@@ -49,14 +87,13 @@ ul
     /* keep canvas horizontally centred, with at least 5% gap on each side,
     resizing as needed */
     position: absolute;
-    width: calc(min(90vw, 1.77*90vh));
+    width: calc(min(90vw, 159.3vh));
     top: 5%;
-    left: calc((100vw - min(90vw, 1.77*90vh))/2);
-    z-index: -1;
-    box-shadow: 0 0 7px 7px rgba(0, 0, 0, 0.6);
-    background-color: rgba(0, 0, 0, 0.6);
+    left: calc((100vw - min(90vw, 159.3vh))/2);
+    box-shadow: 0 0 7px 7px var(--cImageShadow);
+    background-color: var(--cImageShadow);
     opacity: 0;
-    transition: opacity 250ms;
+    transition: opacity 250ms, filter 300ms;
 }
 
 #cnvPipboy
@@ -64,11 +101,19 @@ ul
     width: 100%;
 }
 
+#cnvToggle
+{
+    width: 100%;
+}
 
+#dvCustomLabels
+{
+    text-align: right;
+}
 
 #dvCustomSettings
 {
-    font-size: 1vw;
+    font-size: var(--fontMed);
     width: 100%;
     display: none;
     grid-template-columns: 1fr 1fr;
@@ -105,15 +150,6 @@ ul
     grid-template-rows: repeat(4, 1fr);
 }
 
-#dvInvScreen
-{
-    position: absolute;
-    width: 94%;
-    height: 90%;
-    top: 10%;
-    left: 3%;
-}
-
 #dvInvTop
 {
     display: grid;
@@ -124,7 +160,7 @@ ul
 
 #dvMap
 {
-    background-color: rgba(0, 0, 0, 0);
+    background-color: var(--cClear);
     width: 100%;
     height: 100%;
 }
@@ -150,7 +186,7 @@ ul
     width: 4%;
     height: 7.5%;
 
-    z-index: 1;
+    z-index: 2;
     pointer-events: all;
 
     display: grid;
@@ -159,34 +195,48 @@ ul
 
 #dvPBScreen
 {
-    position: absolute;
-    top: 14%;
-    left: 20.5%;
-    width: 43%;
-    height: 38.5%;
-    pointer-events: all;
-    z-index: 1;
-
+    position: relative;
+    left: 8%;
+    top: 10%;
+    width: 84%;
+    height: 82%;
+    
+    
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     gap: 5%;
-
+    
     font-family: 'Roboto Condensed', sans-serif;
-    font-size: 1.4vw;
-    color: rgb(20, 255, 23);
+    font-size: var(--fontBig);
+    color: var(--cPipGreen);
+    
+    
+    pointer-events: all;
     user-select: none;
+}
+
+#dvPBScreenBG
+{
+    position: absolute;
+    left: 16%;
+    top: 11%;
+    width: 52%;
+    height: 44%;
+    background-color: rgb(8, 17, 9);
+    z-index: -1;
 }
 
 #dvPipboy
 {
     position: absolute;
     left: 5%;
-    top: 5%;
-    width: 75%;
+    width: calc(min(90vw, 164vh));
     height: fit-content;
 
-    transition-duration: 0.3s;
-    z-index: 0;
+    transition: left 300ms;
+    z-index: 2;
+
+    pointer-events: none;
 }
 
 #pCurrentScore
@@ -207,7 +257,7 @@ ul
 .btnNav
 {
     -webkit-appearance: none;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: var(--cClear);
     border: none;
     border-bottom: 3px solid #f9e289;
     cursor: pointer;
@@ -215,13 +265,13 @@ ul
 
 .btnNav:hover
 {
-    box-shadow: 0 3px 3px -2px black;
+    box-shadow: 0 3px 0.75px -1px black;
 }
 
 .dvModeInfo
 {
     display: none;
-    font-size: 1vw;
+    font-size: var(--fontMed);
     position: relative;
 }
 
@@ -239,8 +289,8 @@ ul
 
 .menuHovered
 {
-    background-color: rgb(20, 255, 23);
-    color: rgb(0, 0, 0, 0);;
+    background-color: var(--cPipGreen);
+    color: var(--cClear);
 }
 
 .sPipNav
@@ -251,20 +301,20 @@ ul
 .pipButton
 {
     -webkit-appearance: none;
-    color: rgb(20, 255, 23);
-    background-color: rgb(0, 0, 0, 0);
+    color: var(--cPipGreen);
+    background-color: var(--cClear);
     width: 100%;
     text-align: left;
     border: none;
     padding: 0;
     font-family: 'Roboto Condensed', sans-serif;
-    font-size: 1.4vw;
+    font-size: var(--fontBig);
     padding-left: 1%;
 }
 
 .pipButton:hover
 {
-    background-color: rgb(20, 255, 23);
+    background-color: var(--cPipGreen);
     color: black;
 }
 
@@ -275,7 +325,8 @@ ul
 
 .pipButton:disabled:hover
 {
-    background-color: rgb(0, 0, 0, 0);;
+    cursor: not-allowed;
+    background-color: var(--cClear);
 }
 
 .inputStart
@@ -298,21 +349,12 @@ ul
     width: 70%;
 }
 
-.inputSelect
+@media (min-aspect-ratio: 1.77)
 {
-    color: rgb(20, 255, 23);
-    background-color: rgba(0, 0, 0, 0);
-    border: none;
-    outline: none;
-    border-bottom: solid rgb(20, 255, 23) 3px;
-    padding-left: 3%;
-    font-size: 0.8vw;
-    appearance: none;
-    width: 35%;
-}
-
-.inputSelect > option
-{
-    background-color: black;
-    border-radius: 0;
+    :root
+    {
+        --fontSmall: 1.416vh;
+        --fontMed: 1.77vh;
+        --fontBig: 2.478vh;
+    }
 }
