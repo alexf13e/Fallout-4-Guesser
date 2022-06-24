@@ -60,6 +60,15 @@ select > option
     border-radius: 0;
 }
 
+#dvAnalytics
+{
+    position: absolute;
+    bottom: 5px;
+    color: white;
+    font-size: smaller;
+    text-shadow: 0 0 5px black;
+}
+
 #dvBackground
 {
     position: fixed;

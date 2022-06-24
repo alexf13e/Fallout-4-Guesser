@@ -239,6 +239,24 @@ ul
     pointer-events: none;
 }
 
+#dvReport
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    z-index: 5;
+
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: smaller;
+    color: gray;
+}
+
+#dvReport:hover
+{
+    cursor: pointer;
+}
+
 #pCurrentScore
 {
     display: none;

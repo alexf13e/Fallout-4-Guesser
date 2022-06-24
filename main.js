@@ -46,7 +46,7 @@ var guessConfirmed = false; //guess has been confirmed and asking for answer
 
 var guessImageAnimFrame;
 
-var gameSeed;
+var gameSeed = 0;
 
 var gameParameters = {
     rounds: 5,
@@ -518,6 +518,7 @@ function enableSummary()
     gameEnded = true;
     btnShowSummary.style.display = "none";
     btnEndData.style.display = "block";
+    pCurrentScore.style.color = greenColour;
     pCurrentScore.innerHTML = "Game Summary";
     
     addMessage("<br>"); //add an empty line for readability
@@ -779,4 +780,23 @@ function showErrorImage()
 {
     cnvGuess.style.opacity = "1";
     ctxGuess.drawImage(errorImage, 0, 0, cnvGuess.width, cnvGuess.height);
+}
+
+function getReportData()
+{
+    var info = {
+        gameParameters: gameParameters,
+        gameCode: createGameCode(),
+        imageData: currentImageData,
+        roundNumber: roundNumber,
+        mapType: localStorage.getItem("mapType"),
+        screenType: localStorage.getItem("screenType"),
+        units: localStorage.getItem("unitType")
+    };
+
+    navigator.clipboard.writeText("```" + JSON.stringify(info, null, 3) + "```");
+    alert("Information copied to clipboard. Please send to ▪alex#3059 on discord, " +
+    "along with a description of the problem (if you needed to copy the username " +
+    "and overwrote the copied data, clicking the report button again will copy the " +
+    "same info as before)");
 }
