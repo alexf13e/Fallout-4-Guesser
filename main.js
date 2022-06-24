@@ -416,6 +416,13 @@ function confirmGuess()
     }
 
     //check if game is over
+    if (score < gameParameters.minPassingScore)
+    {
+        //didn't get enough points to pass the round
+        gameOver(1);
+        return;
+    }
+
     if (gameParameters.showRemainingRounds)
     {
         //in a mode with non-unlimited rounds (i.e. not survival or endless)
@@ -427,17 +434,12 @@ function confirmGuess()
             gameOver(0);
         }
     }
-    else if (score < gameParameters.minPassingScore)
-    {
-        //didn't get enough points to pass the round
-        gameOver(1);
-    }
     else if (gameParameters.survival && roundNumber == gameParameters.rounds)
     {
         //in survival mode, completed all rounds
         gameOver(2);
     }
-    else if(gameParameters.survival && totalScore <= 0)
+    else if (gameParameters.survival && totalScore <= 0)
     {
         //score decayed to 0
         gameOver(3);
