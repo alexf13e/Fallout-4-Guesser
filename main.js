@@ -2,11 +2,11 @@
 //i hope you've got a strong stomach
 
 
-var cnvGuess = document.getElementById("cnvGuess");
-var ctxGuess = cnvGuess.getContext("2d");
+const cnvGuess = document.getElementById("cnvGuess");
+const ctxGuess = cnvGuess.getContext("2d");
 
 var guessImageLoaded = false;
-var guessImage = new Image();
+const guessImage = new Image();
 guessImage.onload = function()
 {
     window.clearTimeout(errorImageTimeout);
@@ -28,13 +28,12 @@ guessImage.onload = function()
     beginScoreDecay();
 };
 
-var errorImage = new Image();
+const errorImage = new Image();
 errorImage.src = "./assets/psb.jpg";
 
 var allImageData;
 var currentImageData;
-var imageDir = "./assets/f4gimages/";
-var imNums = [];
+const imageDir = "./assets/f4gimages/";
 var randomisedImageOrder = [];
 var pzGuessImage;
 var roundNumber;
@@ -47,28 +46,19 @@ var guessConfirmed = false; //guess has been confirmed and asking for answer
 var guessImageAnimFrame;
 
 var gameSeed = 0;
+var gameParameters = {};
 
-var gameParameters = {
+const gpNormal = {
     rounds: 5,
     timeLimit: 60,
     minPassingScore: 0,
     minDifficulty: 0,
-    maxDifficulty: 2,
+    maxDifficulty: 1,
     survival: false,
     showRemainingRounds: true
 };
 
-var gpNormal = {
-    rounds: 5,
-    timeLimit: 60,
-    minPassingScore: 0,
-    minDifficulty: 0,
-    maxDifficulty: 2,
-    survival: false,
-    showRemainingRounds: true
-};
-
-var gpSurvival = {
+const gpSurvival = {
     rounds: 636,
     timeLimit: 0,
     minPassingScore: 0,
@@ -78,7 +68,7 @@ var gpSurvival = {
     showRemainingRounds: false
 };
 
-var gpEndless = {
+const gpEndless = {
     rounds: 636,
     timeLimit: 0,
     minPassingScore: 0,
@@ -93,7 +83,7 @@ var roundStartTime;
 var roundTimerTimeout;
 var roundTimerUpdateTimeout;
 var remainingTime;
-var scoreDecayPerSecond = 100;
+var scoreDecayPerSecond;
 var scoreDecayUpdateTimeout;
 var errorImageTimeout;
 
@@ -106,15 +96,15 @@ var scoreStrictness = -3.9; /*Could be changed for difficulty balance https://ww
 var survivalStartingScore = 10000;
 var survivalPeakScore = 0;
 var gameOverMessage;
-var genericDeathMessages = [
+const genericDeathMessages = [
     "you starved to death",
     "you died of dehydration",
     "you were kidnapped by the institute, never to be seen again",
     "you died to an infection"
 ];
 
-var greenColour = "rgb(20, 255, 23)";
-var specialColour = "cyan";
+const greenColour = "rgb(20, 255, 23)";
+const specialColour = "cyan";
 
 
 ////////////////Resources & Initialisation////////////////
@@ -175,19 +165,20 @@ function initialiseGame(mode)
         
         case "survival":
             gameParameters = Object.assign(gameParameters, gpSurvival);
+            scoreDecayPerSecond = 100;
             break;
     
         case "custom":
-            var rounds = document.getElementById("paramRounds").value;
-            var tl = document.getElementById("paramTimeLimit").value;
-            var minps = document.getElementById("paramMinScore").value;
-            var s = document.getElementById("paramSeed").value;
+            const rounds = document.getElementById("paramRounds").value;
+            const tl = document.getElementById("paramTimeLimit").value;
+            const minps = document.getElementById("paramMinScore").value;
+            const s = document.getElementById("paramSeed").value;
 
-            gameParameters.rounds = (rounds == "" || parseInt(rounds) == 0) ? imNums.length : parseInt(rounds);
+            gameParameters.rounds = (rounds == "" || parseInt(rounds) == 0) ? 636 : parseInt(rounds);
             gameParameters.timeLimit = (tl == "" || parseInt(tl) == 0) ? 0 : parseInt(tl);
             gameParameters.minPassingScore = (minps == "" || parseInt(minps) == 0) ? 0 : parseInt(minps);
             gameParameters.survival = false;
-            gameParameters.showRemainingRounds = true;
+            gameParameters.showRemainingRounds = !(rounds == "" || parseInt(rounds) == 0);
             gameParameters.minDifficulty = parseInt(document.getElementById("paramMinDifficulty").value);
             gameParameters.maxDifficulty = parseInt(document.getElementById("paramMaxDifficulty").value);
         
@@ -350,7 +341,7 @@ function confirmGuess()
     var score = 0;
     var gamer = false;
 
-    var answerPosMap = worldToMapPos(currentImageData.pos);
+    const answerPosMap = worldToMapPos(currentImageData.pos);
     answerMarker = mapCreateAnswerMarker(answerPosMap).addTo(map);
 
     if (guessPlaced)
@@ -359,22 +350,22 @@ function confirmGuess()
         guessLine = mapCreateLine([answerPosMap, guessMarker._latlng]).addTo(map);
 
         //get desired bounding rectangle to show guess and answer (+ a little gap at the edges)
-        var guessPosMap = guessMarker._latlng;
-        var BL = new L.LatLng(Math.min(guessPosMap["lat"], answerPosMap["lat"]) - 3, Math.min(guessPosMap["lng"], answerPosMap["lng"]) - 3); //min y, min x
-        var TR = new L.LatLng(Math.max(guessPosMap["lat"], answerPosMap["lat"]) + 3, Math.max(guessPosMap["lng"], answerPosMap["lng"]) + 3); //max y, max x
+        const guessPosMap = guessMarker._latlng;
+        const BL = new L.LatLng(Math.min(guessPosMap["lat"], answerPosMap["lat"]) - 3, Math.min(guessPosMap["lng"], answerPosMap["lng"]) - 3); //min y, min x
+        const TR = new L.LatLng(Math.max(guessPosMap["lat"], answerPosMap["lat"]) + 3, Math.max(guessPosMap["lng"], answerPosMap["lng"]) + 3); //max y, max x
 
         map.flyToBounds([BL, TR]);
         gameLocationSummary.push([guessPosMap, answerPosMap]);
 
-        var guessDistance = Math.sqrt(Math.pow(currentImageData.pos[0] - guessPosWorld[0], 2) + Math.pow(currentImageData.pos[1] - guessPosWorld[1], 2));
-        var distanceMetres = guessDistance * 0.01428; //magic number no touch
-        var maxScore = 5000;
-        var perfectDist = 5;
+        const guessDistance = Math.sqrt(Math.pow(currentImageData.pos[0] - guessPosWorld[0], 2) + Math.pow(currentImageData.pos[1] - guessPosWorld[1], 2));
+        const distanceMetres = guessDistance * 0.01428; //magic number no touch (converts from game units to metres)
+        const maxScore = 5000;
+        const perfectDist = 5;
 
         //Score on a quadratic curve which seemed about reasonable for how difficult I want it to be
         //https://www.desmos.com/calculator/nvdbx3r4qx (b is scoreStrictness)
-        var a = -(maxScore + 495 * scoreStrictness)/249975;
-        var c = maxScore - perfectDist * perfectDist * a - perfectDist * scoreStrictness;
+        const a = -(maxScore + 495 * scoreStrictness) / 249975;
+        const c = maxScore - perfectDist * perfectDist * a - perfectDist * scoreStrictness;
         score = a * distanceMetres * distanceMetres + scoreStrictness * distanceMetres + c;
         score = Math.floor(Math.max(Math.min(maxScore, score), 0)); //constrain score between 0 and maxscore
 
@@ -398,7 +389,7 @@ function confirmGuess()
         map.flyTo(answerPosMap, 3);
     }
 
-    var roundText = roundNumber + ": " + score + " points (" + distMessage + ")";
+    const roundText = roundNumber + ": " + score + " points (" + distMessage + ")";
     addMessage(roundText, gamer);
 
     totalScore += score;
@@ -485,7 +476,7 @@ function gameOver(reason)
     var deathMessage = currentImageData.deathMessage;
     if (deathMessage == "")
     {
-        var i = Math.floor(RNG(gameSeed) * genericDeathMessages.length);
+        const i = Math.floor(RNG(gameSeed) * genericDeathMessages.length);
         deathMessage = genericDeathMessages[i];
     }
 
@@ -547,7 +538,7 @@ function drawGuessImage()
 function addMessage(message, special)
 {
     //add a message to the message box in the data screen, and scroll to the bottom of it
-    var li = document.createElement("li");
+    const li = document.createElement("li");
     li.style.color = special ? specialColour : greenColour;
     li.innerHTML = message;
     roundResultsList.appendChild(li);
@@ -563,7 +554,7 @@ function createRandomImageOrder()
 {
     //put shuffled order for images into array
     randomisedImageOrder = [];
-    var availableImNums = [];
+    const availableImNums = [];
     //return; //comment to enable random order
 
     //get number of total images for selected difficulties
@@ -600,8 +591,7 @@ function RNG(seed)
     var t = seed;
     t = Math.imul(t ^ t >>> 15, t | 1);
     t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    var result = ((t ^ t >>> 14) >>> 0) / 4294967296;
-    return result;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
 }
 
 function beginRoundTimer()
@@ -709,7 +699,7 @@ function formatDistance(metres)
     }
     else
     {
-        var yards = metres * 1.09361;
+        const yards = metres * 1.09361;
         /*feels weird to write over 1000 as yards rather 0.x miles, but i'm not
         sure if theres some convention for when to use which. the mess of imperial
         and metric in this country doesnt help*/
@@ -786,7 +776,7 @@ function showErrorImage()
 
 function getReportData()
 {
-    var info = {
+    const info = {
         gameParameters: gameParameters,
         gameCode: createGameCode(),
         imageData: currentImageData,
