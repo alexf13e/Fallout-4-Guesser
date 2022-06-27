@@ -92,8 +92,9 @@ var gameLocationSummary = [];
 var totalScore = 0;
 var totalTime = 0;
 var totalDistance = 0;
-var scoreStrictness = -3.9; /*Could be changed for difficulty balance https://www.desmos.com/calculator/nvdbx3r4qx */
-var survivalStartingScore = 10000;
+const maxScore = 5000;
+const perfectDist = 5;
+const survivalStartingScore = 10000;
 var survivalPeakScore = 0;
 var gameOverMessage;
 const genericDeathMessages = [
@@ -116,11 +117,10 @@ fetch("./assets/imgData.json")
         response.text().then(createAnswerArray);
     },
     (response) => {
-        //should probably alert the user somethings broke
+        //should probably tell the user somethings broke... oh well
         console.log(response);
     }
 );
-
 
 function createAnswerArray(text)
 {
@@ -165,7 +165,6 @@ function initialiseGame(mode)
         
         case "survival":
             gameParameters = Object.assign(gameParameters, gpSurvival);
-            scoreDecayPerSecond = 100;
             break;
     
         case "custom":
@@ -193,7 +192,6 @@ function initialiseGame(mode)
     //set visibility of ui elements to only show those relevent to current game settings
     if (gameParameters.timeLimit == 0)
     {
-        roundTimer = null;
         pTimer.style.display = "none";
     }
     else
@@ -214,7 +212,6 @@ function initialiseGame(mode)
     if (gameParameters.survival)
     {
         pSurvivalScore.style.display = "block";
-        pSurvivalScore.innerHTML = "Score: " + survivalStartingScore;
     }
     else
     {
@@ -256,6 +253,8 @@ function newGame(newSeed)
     totalTime = 0;
     totalDistance = 0;
     survivalPeakScore = 0;
+    scoreDecayPerSecond = 100;
+    pSurvivalScore.innerHTML = "Score: " + survivalStartingScore;
 
     /*create a new order of images if either no seed was provided in the setup menu,
     or the player selected to start a new game with a new seeed. otherwise, the 
@@ -359,15 +358,8 @@ function confirmGuess()
 
         const guessDistance = Math.sqrt(Math.pow(currentImageData.pos[0] - guessPosWorld[0], 2) + Math.pow(currentImageData.pos[1] - guessPosWorld[1], 2));
         const distanceMetres = guessDistance * 0.01428; //magic number no touch (converts from game units to metres)
-        const maxScore = 5000;
-        const perfectDist = 5;
 
-        //Score on a quadratic curve which seemed about reasonable for how difficult I want it to be
-        //https://www.desmos.com/calculator/nvdbx3r4qx (b is scoreStrictness)
-        const a = -(maxScore + 495 * scoreStrictness) / 249975;
-        const c = maxScore - perfectDist * perfectDist * a - perfectDist * scoreStrictness;
-        score = a * distanceMetres * distanceMetres + scoreStrictness * distanceMetres + c;
-        score = Math.floor(Math.max(Math.min(maxScore, score), 0)); //constrain score between 0 and maxscore
+        score = gameParameters.survival ? getSurvivalScore(distanceMetres) : getNormalScore(distanceMetres);
 
         if (distanceMetres < 1)
         {
@@ -378,6 +370,7 @@ function confirmGuess()
     
         distMessage = formatDistance(distanceMetres);
         totalDistance += distanceMetres;
+        if (gamer) pSurvivalScore.style.color = specialColour;
         pSurvivalScore.innerHTML = "Score: " + totalScore + " + " + score;
     }
     else
@@ -461,6 +454,7 @@ function nextRound()
     pCurrentScore.style.display = "none";
     dvGameInfo.style.display = "grid";
     pTimer.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
+    pSurvivalScore.style.color = greenColour;
     updateRoundCounter();
 
     //reset map
@@ -525,6 +519,8 @@ function enableSummary()
     mapDefaultPos();
     mapClear();
     mapGenerateSummary();
+
+    pipNavChange("map");
 }
 
 
@@ -791,4 +787,58 @@ function getReportData()
     "along with a description of the problem (if you needed to copy the username " +
     "and overwrote the copied data, clicking the report button again will copy the " +
     "same info as before)");
+}
+
+function getNormalScore(dist)
+{
+    /*Score on a quadratic curve which seemed about reasonable for how difficult I want it to be
+    Curve is tuned to have max score at 5 metres, and 0 points at 500 metres
+    https://www.desmos.com/calculator/nvdbx3r4qx (b is scoreStrictness)
+    Vague explanation about how its tuned:
+    ax^2 + bx + c = score (x = distance in metres)
+
+    (we want to find a, b and c which will give a curve suiting our needs (goes through 5000 points at 5 metres, and 0 points at 500 metres))
+    a(5^2) + b(5) + c = 5000
+    a(500^2) + b(500) + c = 0
+
+    c = -a(500^2) - b(500) = 5000 - a(5^2) - b(5)
+    (ignore c for now)
+    5000 = a(5^2) - a(500^2) + b(5) - b(500)
+    5000 = a(500^2 - 5^2) + b(500 - 5)
+    5000 = a(250,000 - 25) + b(495)
+    5000 = 249,975a + 495b
+
+    (decide to tune based on b since it is nicer for adjusting the curve. so we want a as a function of b)
+    249,975a = 5000 - 495b
+    a = (5000 - 495b) / 249,975
+
+    (b is set to whatever we want to tune the curve, named scoreStrictness here)
+
+    c = 5000 - a(5^2) - b(5^2)
+
+    I found b = -3.9 to be reasonable for the size of the map
+    */
+    
+    const scoreStrictness = -3.9;
+    const a = -(maxScore + 495 * scoreStrictness) / 249975;
+    const c = maxScore - perfectDist * perfectDist * a - perfectDist * scoreStrictness;
+
+    score = a * dist * dist + scoreStrictness * dist + c;
+    score = Math.floor(Math.max(Math.min(maxScore, score), 0)); //constrain score between 0 and maxscore
+
+    return score;
+}
+
+function getSurvivalScore(dist)
+{
+    //same as above, but stricter. score drops to 0 at 100 metres, and decays more steeply
+
+    const scoreStrictness = -10;
+    const a = -(maxScore + 95 * scoreStrictness) / 9975;
+    c = maxScore - perfectDist * perfectDist * a - perfectDist * scoreStrictness;
+    
+    score = a * dist * dist + scoreStrictness * dist + c;
+    score = Math.floor(Math.max(Math.min(maxScore, score), 0)); //constrain score between 0 and maxscore
+
+    return score;
 }

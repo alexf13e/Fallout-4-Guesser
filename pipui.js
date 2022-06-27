@@ -153,12 +153,13 @@ function pipSetVisible(desiredVis)
 
 function pipNavChange(screen)
 {
-    //show appropriate div for the selected screen
+    //show appropriate ui for the selected screen
     dvInvScreen.style.display = (screen == "inv") ? "block" : "none";
     dvDataScreen.style.display = (screen == "data") ? "block" : "none";
     dvMapScreen.style.display = (screen == "map") ? "block" : "none";
     dvGameInfo.style.display = ((screen == "data" || screen == "map") && (!guessConfirmed || gameParameters.survival)) ? "grid" : "none";
     dvGameButtons.style.display = (screen == "data" || screen == "map") ? "grid" : "none";
+    
     pCurrentScore.style.display = (guessConfirmed && screen != "inv" && !gameParameters.survival) ? "block" : "none";
     btnNewGame.style.display = (screen == "data" && gameEnded) ? "block" : "none";
     btnRepeatGame.style.display = (screen == "data" && gameEnded) ? "block" : "none";

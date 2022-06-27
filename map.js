@@ -4,7 +4,7 @@
 //550.5 425 256 in-game map
 
 var mapTranslations;
-var mapBounds = [[0,0], [1024,1024]];
+var mapBounds = [[-512, -512], [1536, 1536]];
 var map;
 var wantsReInit = false;
 
@@ -203,8 +203,10 @@ function mapClear()
 
 function mapDefaultPos()
 {
-    //reset map to fully zoomed out and visible
-    map.fitBounds(mapBounds);
+    /*reset map to show full width and be in the centre vertically. looks a bit
+    better than showing the whole thing as a little square in the middle and is
+    less awkward zooming near the edges since it won't get booped over as much*/
+    map.fitBounds([[512, 0], [512, 1024]]);
 }
 
 function mapToWorldPos(mapPos)

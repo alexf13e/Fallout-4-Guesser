@@ -142,9 +142,29 @@
         <br>
 
         <h1>Updates</h1>
+        1.5.1 - 27th June 2022
+        <ul>
+            <li>Fixed survival score decay rate not resetting between games</li>
+            <li>Changed survival mode to have stricter scoring since it was really easy
+                to just click vaguely near the area without zooming in and get loads
+                of points</li>
+            <li>Normal mode now only uses easy and medium images (probably not fun
+                to play for the first time and be dumped in the glowing sea).
+                Endless and survival still use all images</li>
+            <li>Custom mode unlimited rounds now apply correctly instead of being 0</li>
+            <li>Some ui fixes
+                <ul>
+                    <li>Survival score updates at game initialisation</li>
+                    <li>"View game data" button won't show if already in game
+                        data screen at end of game</li>
+                    <li>Remaining round number should show more appropriately in custom modes</li>
+                    <li>Adjusted map restrictions to be less annoying to zoom at the edges</li>
+                </ul>
+            </li>
+        </ul>
+
         1.5 - 23rd June 2022
         <ul>
-            <li>Right where do I even start</li>
             <li>New map system using <a href="https://leafletjs.com/" target="_blank" rel="noreferrer noopener">Leaflet.js</a>, 
                 which is far nicer and allows for a more detailed map without
                 crippling performance</li>
@@ -232,9 +252,10 @@
     <div id="dvAnalytics">
         <p>The game uses google analytics because I find it interesting to see how
             many people have played it. I have tried to turn off most of the
-            creepy spy shit it can track, so as far as I am aware all it is storing
+            creepy stuff it can track, so as far as I am aware all it is storing
             is how many people visit the page, what country they are from, and
-            whether they are new or returning. Hope thats ok.</p>
+            whether they are new or returning (which seems to be as little as I can do).
+            Hope thats ok.</p>
     </div>
 </body>
 </html>
