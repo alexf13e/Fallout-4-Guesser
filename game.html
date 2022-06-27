@@ -7,11 +7,14 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LB4FV46CJK"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+        if (!(navigator.doNotTrack == "1" || navigator.doNotTrack == "yes" || window.doNotTrack == "1"))
+        {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
 
-    gtag('config', 'G-LB4FV46CJK');
+            gtag('config', 'G-LB4FV46CJK');
+        }
     </script>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
