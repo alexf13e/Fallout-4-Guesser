@@ -131,9 +131,10 @@ function checkLoadedImages()
     loadedCount++;
     if (loadedCount >= 6)
     {
+        dvPipboy.style.display = "block";
         pipNavChange("inv");
         pipDraw();
-        dvPipboy.style.display = "block";
+        pipSetVisible(true);
     }
 }
 
