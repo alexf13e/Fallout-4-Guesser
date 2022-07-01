@@ -478,7 +478,8 @@ function confirmGuess()
         return;
     }
 
-    roundsRemaining--;
+    //only reduce rounds in non-endless modes
+    if (gameParameters.custom || gameParameters.showRemainingRounds) roundsRemaining--;
 
     if (roundsRemaining <= 0)
     {
@@ -506,17 +507,9 @@ function nextRound()
     //deal with endless mode
     if (locationIndex >= allImageData.length)
     {
+        //should only reach here in endless and survival, non custom
         locationIndex = 0;
-
-        if (gameParameters.custom)
-        {
-            gameParameters.seed = generateSeed();
-        }
-        else
-        {
-            newStoredSeed();
-        }
-
+        newStoredSeed();
         createRandomImageOrder();
     }
 
@@ -595,6 +588,8 @@ function enableSummary()
     addMessage("Total Time: " + formatTimeString(totalTime), false);
     addMessage("Total Distance Away: " + formatDistance(totalDistance), false);
     if (gameParameters.survival) addMessage("Peak score: " + survivalPeakScore);
+
+    btnNewGame.textContent = "New Game" + (gameParameters.custom ? " (random seed)" : "");
 
     hideGuessImage();
 
@@ -765,15 +760,6 @@ function clearTimeouts()
 
 function createGameCode()
 {
-    //highly sophisticated algorithm to convert the game parameters to a string which can be copied
-    // return ((gameParameters.survival ? "1" : "0")
-    // + gameParameters.rounds.toString().padStart(3, "0")
-    // + gameParameters.timeLimit.toString().padStart(3, "0")
-    // + gameParameters.minPassingScore.toString().padStart(4, "0")
-    // + gameParameters.minDifficulty
-    // + gameParameters.maxDifficulty
-    // + gameParameters.seed.toString().padStart(10, "0"));
-
     /*slightly more sophisticated way (which only saves like 30% at best)
     cant be bothered to make something to convert from base 10 to a higher base
     for the entire code treated as one number, since its too large to use built

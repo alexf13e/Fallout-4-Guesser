@@ -188,7 +188,7 @@ ul
     z-index: 2;
     pointer-events: all;
 
-    display: none;
+    display: grid;
     grid-template-rows: repeat(3, 1fr);
 }
 
@@ -227,6 +227,7 @@ ul
 
 #dvPipboy
 {
+    display: none;
     position: absolute;
     left: 5%;
     width: calc(min(90vw, 164vh));
