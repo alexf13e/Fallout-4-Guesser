@@ -1,13 +1,8 @@
 
-//centreOffsetX, centreOffsetY, game units per map unit
-//512 587 256 (leaflet map)
-//550.5 425 256 in-game map
-
 var mapTranslations;
 var mapBounds = [[0, 0], [1024, 1024]];
 var panBounds = [[-512, -512], [1536, 1536]];
 var map;
-var wantsReInit = false;
 
 L.TileLayer.GameMap = L.TileLayer.extend({
     getTileUrl: function(coords) {
@@ -61,13 +56,15 @@ function mapInit()
             maxZoom: 4,
             zoomSnap: 0.5,
             maxBounds: panBounds,
-            maxBoundsViscosity: 0.5
+            maxBoundsViscosity: 0.5,
+            attributionControl: false
         });
     
         map.on("click", (event) => {
             //don't allow guess marker to be placed before round start or after guess made
             if (!playerReady || guessConfirmed) return;
     
+            //only have 1 guess marker
             if (guessMarker)
             {
                 map.removeLayer(guessMarker);
@@ -85,6 +82,7 @@ function mapInit()
         switch (localStorage.getItem("mapType"))
         {
             case "satellite":
+                //centreOffsetX, centreOffsetY, game units per map unit
                 mapTranslations = [512, 587, 256];
                 L.TileLayer.gameMap().addTo(map);
                 break;
@@ -102,13 +100,14 @@ function mapInit()
 
 function mapGenerateSummary()
 {
-    //show every guess, and a line to it's corresponding answer
+    /*show every guess, and a line to it's corresponding answer. if no guess was made,
+    show just the answer*/
     for (let pair of gameLocationSummary)
     {
         let guess = pair[0];
         let answer = pair[1];
 
-        if (guess != 0)
+        if (guess != null)
         {
             //a guess was made for this round, show it and a line
             let marker = mapCreateGuessMarker(guess);
@@ -169,6 +168,11 @@ function mapToWorldPos(mapPos)
 
 function worldToMapPos(worldPos)
 {
+    /*scale world units to map units, then offset so the scaled (0,0) matches the map (0,0).
+    The scaling factor is world units per map unit. wu / (wu / mu) = wu * (mu / wu) = 1 * mu.
+    (0,0) in the world is pretty much half way between camp kendal and greentech,
+    but is not quite the centre of the map. The leaflet map is 1024 units accross, which is
+    why the offset is in the 500-600 range*/
     let lat = worldPos[1] / mapTranslations[2] + mapTranslations[1];
     let lng = worldPos[0] / mapTranslations[2] + mapTranslations[0];
     return new L.LatLng(lat, lng);

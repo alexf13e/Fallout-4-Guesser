@@ -29,8 +29,8 @@
 </head>
 <body>
 
-    <button id="btnToggle" onclick="pipToggleVisible()">
-        <canvas id="cnvToggle" width="512" height="512"></canvas>
+    <button id="btnTogglePip" onclick="pipToggleVisible()">
+        <canvas id="cnvTogglePip" width="256" height="256"></canvas>
     </button>
     <canvas id="cnvGuess" width="1920" height="1080"></canvas>
     
@@ -41,10 +41,11 @@
             <div id="dvPBScreen">
                 <div id="dvInvScreen" class="sPipNav">
                     <div id="dvTitle">
-                        <p>Select gamemode</p>
-                        <br>
-                        </div>
+                        <p>Select gamemode</p><br>
+                    </div>
                     <div id="dvInvTop">
+                        <!-- The easiest way I could think of to have the square
+                        next to the selected mode -->
                         <div id="dvModeSelectionIcons">
                             <p id="ms1"></p>
                             <p id="ms2"></p>
@@ -85,29 +86,38 @@
                             </p>
                             <span>
                                 <p class="inputStart">></p>
-                                <input id="shareCodeInput"  class="inputLong"type="text" placeholder="Enter code">
+                                <input id="shareCodeInput"  class="inputLong" type="text" placeholder="Enter code">
                             </span>
                             <button id="btnStartGame" class="pipButton" onclick="initialiseGame('custom')">Start Game</button>
                         </div>
                     </div>
+
                     <div id="dvCustomSettings">
                         <div id="dvCustomLabels">
-                            <label for="paramRounds">Rounds per game </label>
-                            <label for="paramTimeLimit">Time limit per round (seconds) </label>
-                            <label for="paramMinScore">Minimum score to pass the round </label>
-                            <label for="paramMinDifficulty">Min difficulty </label>
-                            <label for="paramMaxDifficulty">Max difficulty </label>
+                            <label for="paramMode">Mode</label>
+                            <label for="paramRounds">Rounds</label>
+                            <label for="paramTimeLimit">Time limit per round (seconds)</label>
+                            <label for="paramMinScore">Minimum score to pass</label>
+                            <label for="paramMinDifficulty">Min difficulty</label>
+                            <label for="paramMaxDifficulty">Max difficulty</label>
                             <label for="paramSeed">Seed (min 3 digits recommended)</label>
                         </div>
                         <div id="dvCustomParameters">
                             <span>
+                                <p class="inputStart">v</p>
+                                <select id="paramMode">
+                                    <option value="0">Normal</option>
+                                    <option value="1">Survival</option>
+                                </select>
+                            </span>
+                            <span>
                                 <p class="inputStart">></p>
-                                <input id="paramRounds" class="inputMed" type="text" value="5" min="0" max="636" placeholder="Unlimited">
+                                <input id="paramRounds" class="inputMed" type="text" value="5" min="0" max="636" placeholder="All">
                             </span>
                             
                             <span>
                                 <p class="inputStart">></p>
-                                <input id="paramTimeLimit" class="inputMed" type="text" value="60" min="0" max="600" placeholder="Unlimited">
+                                <input id="paramTimeLimit" class="inputMed" type="text" value="60" min="0" max="600" placeholder="None">
                             </span>
                             <span>
                                 <p class="inputStart">></p>
@@ -137,8 +147,6 @@
                     </div>
                 </div>
 
-                
-
                 <div id="dvGameInfo">
                     <p id="pRoundCount"></p>
                     <p id="pTimer"></p>
@@ -146,6 +154,8 @@
                     <p id="pSurvivalScore"></p>
                 </div>
 
+                <!-- Separate from gameInfo since it wants to swap visibilty with
+                the gameInfo elements, and easier to just hide their whole div -->
                 <p id="pCurrentScore"></p>
 
                 <div id="dvMapScreen" class="sPipNav">
@@ -153,19 +163,19 @@
                 </div>
 
                 <div id="dvDataScreen" class="sPipNav">
-                    <ul id="roundResults">
-
-                    </ul>
+                    <ul id="roundResults"></ul>
                 </div>
 
+                <!-- Buttons separate from screens as they may want to be shown
+                on multiple screens -->
                 <div id="dvGameButtons">
                     <button id="btnReady" class="pipButton" onclick="ready()">Start</button>
                     <button id="btnConfirmGuess" class="pipButton" onclick="confirmGuess()">Confirm Guess</button>
                     <button id="btnNextRound" class="pipButton" onclick="nextRound()">Next Round</button>
                     <button id="btnShowSummary" class="pipButton" onclick="enableSummary();">Show Summary</button>
                     <button id="btnEndData" class="pipButton" onclick="pipNavChange('data')">View Game Data</button>
-                    <button id="btnNewGame" class="pipButton" onclick="newGame(true)">New Game (random seed)</button>
-                    <button id="btnRepeatGame" class="pipButton" onclick="newGame(false)">Repeat Game (same seed)</button>
+                    <button id="btnNewGame" class="pipButton" onclick="newGame(false)">New Game (random seed)</button>
+                    <button id="btnRepeatGame" class="pipButton" onclick="newGame(true)">Repeat Game (same seed)</button>
                 </div>
             </div>
         </div>
@@ -179,8 +189,6 @@
 
     <div id="dvReport" onclick="getReportData()">
         Click here to report an issue (or give feedback if you want)
-    </div>
-    
-    
+    </div>   
 </body>
 </html>

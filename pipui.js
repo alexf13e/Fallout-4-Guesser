@@ -2,10 +2,11 @@
 var cnvPipboy = document.getElementById("cnvPipboy");
 var ctxPipboy = cnvPipboy.getContext("2d");
 
-var cnvToggle = document.getElementById("cnvToggle");
-var ctxToggle = cnvToggle.getContext("2d");
+var cnvTogglePip = document.getElementById("cnvTogglePip");
+var ctxToggle = cnvTogglePip.getContext("2d");
  
 var dvPipboy = document.getElementById("dvPipboy");
+var dvPBNav = document.getElementById("dvPBNav");
  
 var dvInvScreen = document.getElementById("dvInvScreen");
 var dvMapScreen = document.getElementById("dvMapScreen");
@@ -128,10 +129,11 @@ var buttonFlashing = false;
 function checkLoadedImages()
 {
     loadedCount++;
-    if (loadedCount >= 5)
+    if (loadedCount >= 6)
     {
         pipNavChange("inv");
         pipDraw();
+        dvPBNav.style.display = "grid";
     }
 }
 
@@ -157,10 +159,10 @@ function pipNavChange(screen)
     dvInvScreen.style.display = (screen == "inv") ? "block" : "none";
     dvDataScreen.style.display = (screen == "data") ? "block" : "none";
     dvMapScreen.style.display = (screen == "map") ? "block" : "none";
-    dvGameInfo.style.display = ((screen == "data" || screen == "map") && (!guessConfirmed || gameParameters.survival)) ? "grid" : "none";
+    dvGameInfo.style.display = ((screen == "data" || screen == "map") && (!guessConfirmed || gameParameters.survival) && !gameEnded) ? "grid" : "none";
     dvGameButtons.style.display = (screen == "data" || screen == "map") ? "grid" : "none";
     
-    pCurrentScore.style.display = (guessConfirmed && screen != "inv" && !gameParameters.survival) ? "block" : "none";
+    pCurrentScore.style.display = (screen != "inv" && guessConfirmed && (!gameParameters.survival || gameEnded)) ? "block" : "none";
     btnNewGame.style.display = (screen == "data" && gameEnded) ? "block" : "none";
     btnRepeatGame.style.display = (screen == "data" && gameEnded) ? "block" : "none";
     btnEndData.style.display = (screen == "map" && gameEnded) ? "block" : "none";
@@ -285,7 +287,7 @@ function d2r(d)
 
 function drawToggleButton()
 {
-    ctxToggle.clearRect(0, 0, cnvToggle.width, cnvToggle.height);
+    ctxToggle.clearRect(0, 0, cnvTogglePip.width, cnvTogglePip.height);
     ctxToggle.shadowBlur = 10;
     ctxToggle.shadowColor = "black";
     ctxToggle.drawImage(imToggle, 0, 0);
@@ -301,7 +303,7 @@ function flashButtonOn()
     ctxToggle.shadowBlur = 0;
     ctxToggle.globalCompositeOperation = "source-in";
     ctxToggle.fillStyle = "#f9e289";
-    ctxToggle.fillRect(0, 0, cnvToggle.width, cnvToggle.height);
+    ctxToggle.fillRect(0, 0, cnvTogglePip.width, cnvTogglePip.height);
 
     ctxToggle.globalCompositeOperation = "source-over";
 

@@ -15,17 +15,12 @@ class PZImage
         this.mouseHeld = false;
         this.prevMouse = [0, 0];
         this.prevMouseClick = [-1, -1];
-        this.clickFunction = () => { return; };
-    }
-
-    setClickFunction(f)
-    {
-        this.clickFunction = f;
     }
 
     draw(context)
     {
-        context.clearRect(0, 0, this.parent.width, this.parent.height);
+        // context.clearRect(0, 0, this.parent.width, this.parent.height);  //shouldn't need to clear since image can never be smaller than its canvas, but if needed it should be done here
+
         //TL and BR act as corners of a view frame moving over the image. whatever is in the view
         //the corners of the view frame, and everything within them, match onto the canvas
         context.drawImage(this.image,
@@ -51,7 +46,7 @@ class PZImage
         this.restrictView();
     }
 
-    changeZoomButton(delta)
+    changeZoomCentre(delta)
     {
         //zoom to cenre rather than mouse pos
         let parentDims = this.parent.getBoundingClientRect();
@@ -175,7 +170,6 @@ class PZImage
         if (Math.abs(currentMouse[0] - this.mouseDownPos[0]) < 10 && Math.abs(currentMouse[1] - this.mouseDownPos[1]) < 10)
         {
             this.prevMouseClick = currentMouse;
-            this.clickFunction();
         }
     }
 

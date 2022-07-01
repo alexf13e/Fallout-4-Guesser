@@ -1,10 +1,16 @@
+
+/*I tried to keep event based stuff together here, but some just make more
+sense to be elsewhere in the program. e.g. cnvGuess stuff is here becasue I feel it
+would take up too much space in main, whereas the guess image onload is in main
+because its more related to stuff there and isn't that big*/
+
 var guessImageDragging = false;
 
 cnvGuess.addEventListener("mousedown", (event) => {
     if (!guessImageLoaded) return;
 
     pzGuessImage.mouseDown(event);
-    if (playerReady) cnvGuess.style.cursor = "grabbing";
+    if (playerReady && !gameEnded) cnvGuess.style.cursor = "grabbing";
     guessImageDragging = true;
 });
 
@@ -18,15 +24,15 @@ cnvGuess.addEventListener("wheel", (event) => {
 });
 
 cnvGuess.addEventListener("mouseenter", () => {
-    if (playerReady)
+    if (playerReady && !gameEnded)
     {
         if (guessImageDragging) cnvGuess.style.cursor = "grabbing";
         else cnvGuess.style.cursor = "grab";
     }
-});
-
-cnvGuess.addEventListener("mouseleave", () => {
-    if (guessImageDragging && playerReady) document.body.style.cursor = "grabbing";
+    else
+    {
+        cnvGuess.style.cursor = "default";
+    }
 });
 
 //Automatically try to show the image again if it became ready during the transition away
@@ -50,14 +56,14 @@ window.addEventListener("mouseup", (event) => {
     {
         pzGuessImage.mouseUp(event);
         guessImageDragging = false;
-        document.body.style.cursor = "default";
         if (playerReady) cnvGuess.style.cursor = "grab";
     }
 });
 
 window.addEventListener("keyup", (event) => {
+    //change to a switch if more keys get added
     if (event.key == "Shift") pipToggleVisible();
-    if (event.key == " ")
+    else if (event.key == " ")
     {
         if (window.getComputedStyle(btnConfirmGuess).display == "block" && !btnConfirmGuess.disabled)
         {
@@ -87,6 +93,13 @@ window.addEventListener("keypress", (event) => {
     }
 });
 
+window.addEventListener("beforeunload", (event) => {
+    /*for the specific case of played game -> repeated game -> left half way through,
+    so the stored roundOffset isnt half way through the repeated game when they come back.
+    doesn't matter if activated in other conditions, roundOffset will already be maxOffset*/
+    localStorage.setItem("roundOffset", maxOffset);
+});
+
 
 /*right this is probably a terrible way of doing things, but basically i want
 to restrict what can be typed into the boxes so it's obvious and nice to deal with
@@ -96,6 +109,7 @@ let inputs = document.getElementsByTagName("input");
 
 for (let i = 0; i < inputs.length; i++)
 {
+    //only want to set these events for the text inputs in the custom settings area
     if (inputs[i].type != "text" || inputs[i].id == "shareCodeInput") continue;
 
     inputs[i].addEventListener("keypress", (event) => {
@@ -111,7 +125,7 @@ for (let i = 0; i < inputs.length; i++)
     });
 
     inputs[i].addEventListener("focusout", (event) => {
-        validateDeselect(event);
+        validateOnDefocus(event);
     });
 }
 
@@ -124,13 +138,6 @@ for (let i = 0; i < selects.length; i++)
 
 let inpShareCode = document.getElementById("shareCodeInput");
 
-inpShareCode.addEventListener("paste", (event) => {
-    if (!validatePaste(event))
-    {
-        event.preventDefault();
-    }
-});
-
 inpShareCode.addEventListener("keyup", () => {
-    readShareCode();
+    readGameCode();
 });

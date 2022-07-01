@@ -1,6 +1,5 @@
 ﻿
-//i hope you've got a strong stomach
-
+//i hope you've got a strong stomach https://youtu.be/j0_u26Vpb4w?t=483
 
 const cnvGuess = document.getElementById("cnvGuess");
 const ctxGuess = cnvGuess.getContext("2d");
@@ -9,44 +8,74 @@ var guessImageLoaded = false;
 const guessImage = new Image();
 guessImage.onload = function()
 {
+    //stop the error image appearing
     window.clearTimeout(errorImageTimeout);
 
-    if (pzGuessImage == undefined)
-    {
-        pzGuessImage = new PZImage(guessImage, cnvGuess, 4);
-    }
-
-    if (guessImageAnimFrame != undefined)
-    {
-        cancelAnimationFrame(guessImageAnimFrame);
-    }
-
+    pzGuessImage.resetPos();
+    
     guessImageLoaded = true;
     showGuessImage();
 
+    if (showingErrorImage)
+    {
+        /*fade transition from the error image to the actual image, which will
+        automatically redraw the guess image too*/
+        hideGuessImage();
+        showingErrorImage = false;
+    }
+    
     beginRoundTimer(); //try to start round timer each round. won't start when first loaded since player won't be ready
     beginScoreDecay();
 };
 
+const pzGuessImage = new PZImage(guessImage, cnvGuess, 4);
+
+//shown if the guess image is taking to long to load. if this doesnt load then idk
 const errorImage = new Image();
 errorImage.src = "./assets/psb.jpg";
+var errorImageTimeout;
+var showingErrorImage = false;
 
+const imageDir = "./assets/f4gimages/";
 var allImageData;
 var currentImageData;
-const imageDir = "./assets/f4gimages/";
-var randomisedImageOrder = [];
-var pzGuessImage;
+var randomisedImageOrder;
+
+const maxScore = 5000;
+const perfectDist = 5;
+const survivalStartingScore = 10000;
+var locationIndex;
 var roundNumber;
+var roundsRemaining;
 var gameEnded;
 
+var playerReady;
 var guessPosWorld;
-var guessPlaced = false; //control visibility of guess marker, only show after first click
-var guessConfirmed = false; //guess has been confirmed and asking for answer
+var guessPlaced;
+var guessConfirmed;
+var firstGame;
 
-var guessImageAnimFrame;
+var gameLocationSummary;
+var totalScore = 0;
+var totalTime = 0;
+var totalDistance = 0;
+var survivalPeakScore = 0;
+var gameOverMessage;
+const genericDeathMessages = [
+    "you starved to death",
+    "you died of dehydration",
+    "you were kidnapped by the institute, never to be seen again",
+    "you died to an infection"
+];
 
-var gameSeed = 0;
-var gameParameters = {};
+var roundStartTime;
+var roundTimerTimeout;
+var roundTimerUpdateTimeout;
+var remainingTime;
+var scoreDecayPerSecond;
+var scoreDecayUpdateTimeout;
+
+var gameParameters = {}; //current gameParameters, will copy from those of another mode, or be set itself for custom mode
 
 const gpNormal = {
     rounds: 5,
@@ -55,6 +84,9 @@ const gpNormal = {
     minDifficulty: 0,
     maxDifficulty: 1,
     survival: false,
+    custom: false,
+    seed: 0,
+    roundOffset: 0,
     showRemainingRounds: true
 };
 
@@ -65,6 +97,9 @@ const gpSurvival = {
     minDifficulty: 0,
     maxDifficulty: 2,
     survival: true,
+    custom: false,
+    seed: 0,
+    roundOffset: 0,
     showRemainingRounds: false
 };
 
@@ -75,37 +110,21 @@ const gpEndless = {
     minDifficulty: 0,
     maxDifficulty: 2,
     survival: false,
+    custom: false,
+    seed: 0,
+    roundOffset: 0,
     showRemainingRounds: false
 };
 
-var roundsRemaining;
-var roundStartTime;
-var roundTimerTimeout;
-var roundTimerUpdateTimeout;
-var remainingTime;
-var scoreDecayPerSecond;
-var scoreDecayUpdateTimeout;
-var errorImageTimeout;
-
-var playerReady = false;
-var gameLocationSummary = [];
-var totalScore = 0;
-var totalTime = 0;
-var totalDistance = 0;
-const maxScore = 5000;
-const perfectDist = 5;
-const survivalStartingScore = 10000;
-var survivalPeakScore = 0;
-var gameOverMessage;
-const genericDeathMessages = [
-    "you starved to death",
-    "you died of dehydration",
-    "you were kidnapped by the institute, never to be seen again",
-    "you died to an infection"
-];
+if (!localStorage.getItem("seed")) newStoredSeed();
+/*if the player repeats a game, then starts a new one mid way through, instead of
+continuing from the round after the one they left during, go to the round that would
+have been after the game theyre repeating*/
+var maxOffset = parseInt(localStorage.getItem("roundOffset"));
 
 const greenColour = "rgb(20, 255, 23)";
 const specialColour = "cyan";
+const deathColour = "rgb(225, 93, 61)";
 
 
 ////////////////Resources & Initialisation////////////////
@@ -129,18 +148,22 @@ function createAnswerArray(text)
 }
 
 function updateImage()
-{
+{    
     hideGuessImage();
+    errorImageTimeout = window.setTimeout(showErrorImage, 5000);
 
-    //get data about image
-    currentImageData = allImageData[randomisedImageOrder[roundNumber - 1]];
+    if (!gameParameters.custom)
+    {
+        localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) + 1);
+        maxOffset = Math.max(parseInt(localStorage.getItem("roundOffset")), maxOffset);
+    }
+
+    currentImageData = allImageData[randomisedImageOrder[locationIndex]];
     guessImageLoaded = false;
     guessImage.src = imageDir + currentImageData.src;
 
-    //update pipboy rads and difficulty
+    //update rads and difficulty indicators on pip boy
     pipDraw();
-
-    errorImageTimeout = window.setTimeout(showErrorImage, 5000);
 }
 
 function initialiseGame(mode)
@@ -149,18 +172,17 @@ function initialiseGame(mode)
 
     //reset timers that may have been active if starting a new game during a previous one
     clearTimeouts();
-
-    //tell the game to generate a random order of images, unless a seed is provided
-    var newSeed = true;
     
+    firstGame = true;
+
     switch (mode)
     {
-        case "endless":
-            gameParameters = Object.assign(gameParameters, gpEndless);
-            break;
-    
         case "normal":
             gameParameters = Object.assign(gameParameters, gpNormal);
+            break;
+
+        case "endless":
+            gameParameters = Object.assign(gameParameters, gpEndless);
             break;
         
         case "survival":
@@ -168,25 +190,23 @@ function initialiseGame(mode)
             break;
     
         case "custom":
-            const rounds = document.getElementById("paramRounds").value;
-            const tl = document.getElementById("paramTimeLimit").value;
-            const minps = document.getElementById("paramMinScore").value;
-            const s = document.getElementById("paramSeed").value;
+            //felt like not typing x.value multiple times for ones that are used multiple times
+            const rounds = paramRounds.value;
+            const tl = paramTimeLimit.value;
+            const minps = paramMinScore.value;
+            const seed = paramSeed.value;
 
-            gameParameters.rounds = (rounds == "" || parseInt(rounds) == 0) ? 636 : parseInt(rounds);
+            gameParameters.survival = paramMode.value == "1";
+            gameParameters.rounds = (rounds == "" || parseInt(rounds) == 0) ? allImageData.length : parseInt(rounds);
             gameParameters.timeLimit = (tl == "" || parseInt(tl) == 0) ? 0 : parseInt(tl);
             gameParameters.minPassingScore = (minps == "" || parseInt(minps) == 0) ? 0 : parseInt(minps);
-            gameParameters.survival = false;
+            gameParameters.minDifficulty = parseInt(paramMinDifficulty.value);
+            gameParameters.maxDifficulty = parseInt(paramMaxDifficulty.value);
+            gameParameters.custom = true;
+            gameParameters.roundOffset = 0;
             gameParameters.showRemainingRounds = !(rounds == "" || parseInt(rounds) == 0);
-            gameParameters.minDifficulty = parseInt(document.getElementById("paramMinDifficulty").value);
-            gameParameters.maxDifficulty = parseInt(document.getElementById("paramMaxDifficulty").value);
-        
-            if (s != "")
-            {
-                newSeed = false;
-                gameSeed = parseInt(s);
-            }
-            break; 
+            gameParameters.seed = seed;
+            break;
     }
 
     //set visibility of ui elements to only show those relevent to current game settings
@@ -223,10 +243,10 @@ function initialiseGame(mode)
     btnReady.style.display = "block";
 
     //start a game with the newly set parameters
-    newGame(newSeed);
+    newGame(false);
 }
 
-function newGame(newSeed)
+function newGame(repeat)
 {
     //reset all the game states to be ready for a new game to start
     roundNumber = 1;
@@ -246,6 +266,9 @@ function newGame(newSeed)
     btnNewGame.style.display = "none";
     btnRepeatGame.style.display = "none";
 
+    pMinScore.style.color = greenColour;
+    pSurvivalScore.style.color = greenColour;
+
     playerReady = false;
     gameEnded = false;
     gameLocationSummary = [];
@@ -255,27 +278,68 @@ function newGame(newSeed)
     survivalPeakScore = 0;
     scoreDecayPerSecond = 100;
     pSurvivalScore.innerHTML = "Score: " + survivalStartingScore;
+    pTimer.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
 
-    /*create a new order of images if either no seed was provided in the setup menu,
-    or the player selected to start a new game with a new seeed. otherwise, the 
-    random order will just be regenerated with the old seed and be the same*/
-    if (newSeed)
+    /*if replaying game, dont regenerate new image order. for custom seed, the
+    round number going back to 1 will make the game repeat. for non-custom seed,
+    the round offset will be reduced by the number of rounds in the game, undoing
+    the increase at the end of the last game.*/
+    if (!gameParameters.custom)
     {
-        generateSeed();
-        createRandomImageOrder();
+        if (repeat)
+        {
+            localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) - gameParameters.rounds);
+            gameParameters.roundOffset = parseInt(localStorage.getItem("roundOffset"));
+        }
+        else
+        {
+            localStorage.setItem("roundOffset", maxOffset);
+            gameParameters.roundOffset = maxOffset;
+        }
+
+        gameParameters.seed = parseInt(localStorage.getItem("seed"));
     }
+    else if (!repeat)
+    {
+        if (firstGame)
+        {
+            //seed was not set by options in initialisation, so a random one is desired
+            if (gameParameters.seed == "") gameParameters.seed = generateSeed();
+        }
+        else
+        {
+            //new game not wanting repeat
+            gameParameters.seed = generateSeed();
+        }
+    }
+
+    firstGame = false;
+
+    //if a repeating a custom mode, the seed will have to already have been set and will be unchanged
+    
+
+    /*createRandomImageOrder should be called whenever not repeating in case the
+    previous game and current game aren't using the same seed. if they are using
+    the same seed it wont matter (and takes very little time to process so whatever)*/
+    if (!repeat) createRandomImageOrder();
+    locationIndex = gameParameters.roundOffset;
 
     updateImage();
-
+    
     if (randomisedImageOrder.length < gameParameters.rounds)
     {
-        addMessage("Note: only " + randomisedImageOrder.length + " images available with current settings", false);
         roundsRemaining = randomisedImageOrder.length;
+        gameParameters.rounds = randomisedImageOrder.length;
+
+        if (gameParameters.showRemainingRounds)
+        {
+            //wanted a specific number of rounds which cannot be done, let player know
+            addMessage("Note: only " + roundsRemaining + " images available with current settings", false);
+        }
     }
     
-    addMessage("Game code for sharing: " + createGameCode() + "<br>", false);
+    if (gameParameters.custom) addMessage("Game code for sharing: " + createGameCode() + "<br>", false);
     updateRoundCounter();
-    pTimer.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
 
     if (map)
     {
@@ -297,12 +361,11 @@ function ready()
     btnConfirmGuess.style.display = "block";
     pipSetVisible(false);
     pipNavChange("map");
-    
+    mapDefaultPos();
     showGuessImage();
 
     if (guessImageLoaded)
     {
-        pzGuessImage.resetPos();
         beginRoundTimer();
         beginScoreDecay();
     }
@@ -371,16 +434,17 @@ function confirmGuess()
         distMessage = formatDistance(distanceMetres);
         totalDistance += distanceMetres;
         if (gamer) pSurvivalScore.style.color = specialColour;
-        pSurvivalScore.innerHTML = "Score: " + totalScore + " + " + score;
     }
     else
     {
         distMessage = "No guess made";
         //add distinct "nothing" for no guess, so it doesnt draw the guess or line in the summary
-        gameLocationSummary.push([0, answerPosMap]);
+        gameLocationSummary.push([null, answerPosMap]);
 
         map.flyTo(answerPosMap, 3);
     }
+
+    pSurvivalScore.innerHTML = "Score: " + totalScore + " + " + score;
 
     const roundText = roundNumber + ": " + score + " points (" + distMessage + ")";
     addMessage(roundText, gamer);
@@ -396,7 +460,7 @@ function confirmGuess()
     if (gameParameters.survival)
     {
         if (totalScore > survivalPeakScore) survivalPeakScore = totalScore;
-        scoreDecayPerSecond = Math.min(scoreDecayPerSecond + 50, 500);
+        scoreDecayPerSecond = Math.min(scoreDecayPerSecond + 50, 750);
     }
 
     //check if game is over
@@ -407,26 +471,27 @@ function confirmGuess()
         return;
     }
 
-    if (gameParameters.showRemainingRounds)
-    {
-        //in a mode with non-unlimited rounds (i.e. not survival or endless)
-        roundsRemaining--;
-
-        if (roundsRemaining <= 0)
-        {
-            //completed the number of rounds the game was set to, finished
-            gameOver(0);
-        }
-    }
-    else if (gameParameters.survival && roundNumber == gameParameters.rounds)
-    {
-        //in survival mode, completed all rounds
-        gameOver(2);
-    }
-    else if (gameParameters.survival && totalScore <= 0)
+    if (gameParameters.survival && totalScore <= 0)
     {
         //score decayed to 0
         gameOver(3);
+        return;
+    }
+
+    roundsRemaining--;
+
+    if (roundsRemaining <= 0)
+    {
+        if (gameParameters.survival)
+        {
+            //in survival mode, completed all rounds
+            gameOver(2);
+        }
+        else
+        {
+            //completed the number of rounds the game was set to
+            gameOver(0);
+        }
     }
 }
 
@@ -435,17 +500,28 @@ function nextRound()
     //reset some of the game state for a new round
     guessConfirmed = false;
     
-    roundNumber = (roundNumber + 1) % (gameParameters.rounds + 1);
-    if (roundNumber == 0)
+    roundNumber++;
+    locationIndex++;
+
+    //deal with endless mode
+    if (locationIndex >= allImageData.length)
     {
-        roundNumber = 1;
-        addMessage("All images complete, re-randomisng order", false);
-        generateSeed();
+        locationIndex = 0;
+
+        if (gameParameters.custom)
+        {
+            gameParameters.seed = generateSeed();
+        }
+        else
+        {
+            newStoredSeed();
+        }
+
         createRandomImageOrder();
     }
 
+    //go to next location
     updateImage();
-    pzGuessImage.resetPos();
     guessPosWorld = [0,0];
 
     //update ui
@@ -470,7 +546,7 @@ function gameOver(reason)
     var deathMessage = currentImageData.deathMessage;
     if (deathMessage == "")
     {
-        const i = Math.floor(RNG(gameSeed) * genericDeathMessages.length);
+        const i = Math.floor(RNG(gameParameters.seed) * genericDeathMessages.length);
         deathMessage = genericDeathMessages[i];
     }
 
@@ -482,14 +558,18 @@ function gameOver(reason)
 
         case 1: //score less than min passing score
             gameOverMessage = "You survived " + (roundNumber - 1) + " rounds before " + deathMessage;
+            pMinScore.style.color = deathColour;
             break;
             
-        case 2:
-            gameOverMessage = "You survived every round";
+        case 2: //completed all rounds of a survival game
+            gameOverMessage = "Congratulations, you survived every round and won " 
+            + "<a href='https://fallout.fandom.com/wiki/Graygarden?file=FO4_Brand_New_Car.jpg'"
+            + "target='_blank' rel='noreferrer noopener'>a brand new car!</a>";
             break;
         
-        case 3:
+        case 3: //score drained to 0
             gameOverMessage = "You survived " + (roundNumber - 1) + " rounds before " + deathMessage;
+            pSurvivalScore.style.color = deathColour;
             break;
 
         default:
@@ -507,6 +587,8 @@ function enableSummary()
     btnEndData.style.display = "block";
     pCurrentScore.style.color = greenColour;
     pCurrentScore.innerHTML = "Game Summary";
+    dvGameInfo.style.display = "none";
+    pCurrentScore.style.display = "block";
     
     addMessage("<br>"); //add an empty line for readability
     addMessage(gameOverMessage, false);
@@ -543,7 +625,7 @@ function addMessage(message, special)
 
 function generateSeed()
 {
-    gameSeed = Math.floor(Math.random() * 2147483648);
+    return Math.floor(Math.random() * 2147483648);
 }
 
 function createRandomImageOrder()
@@ -562,10 +644,22 @@ function createRandomImageOrder()
         }
     }
 
+    if (!(gameParameters.custom || gameParameters.rounds == 636) && gameParameters.rounds > availableImNums.length - gameParameters.roundOffset)
+    {
+        /*dont want this to get too complicated. if there arent enough unseen
+        locations left to fill this game, just get a new seed and start at the
+        beginning again (cba to use remaining locations, then get a new seed and
+        fill the remaining rounds with new images but making sure they weren't
+        used before)
+        Endless and survival games sort themseleves out, and custom games have
+        no offset*/
+        newStoredSeed();
+    }
+
     //https://bost.ocks.org/mike/shuffle/
     var m = availableImNums.length;
     var i;
-    var s = gameSeed;
+    var s = gameParameters.seed;
 
     // While there remain elements to shuffle…
     while (m) {
@@ -605,7 +699,12 @@ function beginRoundTimer()
 
     roundStartTime = Date.now();
     updateRoundTimer();
-    roundTimerTimeout = window.setTimeout(confirmGuess, gameParameters.timeLimit * 1000);
+    roundTimerTimeout = window.setTimeout(() => {
+            //make timer neatly say 0 at end
+            window.clearTimeout(roundTimerTimeout);
+            pTimer.innerHTML = "Time: " + formatTimeString(0)
+            confirmGuess();
+        }, gameParameters.timeLimit * 1000);
 }
 
 function updateRoundTimer()
@@ -667,12 +766,49 @@ function clearTimeouts()
 function createGameCode()
 {
     //highly sophisticated algorithm to convert the game parameters to a string which can be copied
-    return (gameParameters.rounds.toString().padStart(3, "0")
-    + gameParameters.timeLimit.toString().padStart(3, "0")
-    + gameParameters.minPassingScore.toString().padStart(4, "0")
-    + gameParameters.minDifficulty
-    + gameParameters.maxDifficulty
-    + gameSeed.toString().padStart(10, "0"));
+    // return ((gameParameters.survival ? "1" : "0")
+    // + gameParameters.rounds.toString().padStart(3, "0")
+    // + gameParameters.timeLimit.toString().padStart(3, "0")
+    // + gameParameters.minPassingScore.toString().padStart(4, "0")
+    // + gameParameters.minDifficulty
+    // + gameParameters.maxDifficulty
+    // + gameParameters.seed.toString().padStart(10, "0"));
+
+    /*slightly more sophisticated way (which only saves like 30% at best)
+    cant be bothered to make something to convert from base 10 to a higher base
+    for the entire code treated as one number, since its too large to use built
+    in methods*/
+    var gcSurvival = (gameParameters.survival ? "1" : "0");
+    var gcRounds = gameParameters.rounds;
+    var gcTimeLimit = gameParameters.timeLimit;
+    var gcMinScore = gameParameters.minPassingScore;
+    var gcMinDif = gameParameters.minDifficulty;
+    var gcMaxDif = gameParameters.maxDifficulty;
+    var gcSeed  = gameParameters.seed.toString(16);
+
+    /*
+        try to shorten the code by reducing leading 0s
+
+        x -> x
+        0x -> ax
+        00x -> bx
+        000x -> cx
+        all 0 -> 0
+    */
+
+    var zeroChars = ["", "a", "b", "c"];
+
+    gcRounds = (gcRounds == 0 ? "0" : zeroChars[3 - gcRounds.toString().length] + gcRounds.toString());
+    gcTimeLimit = (gcTimeLimit == 0 ? "0" : zeroChars[3 - gcTimeLimit.toString().length] + gcTimeLimit.toString());
+    gcMinScore = (gcMinScore == 0 ? "0" : zeroChars[4 - gcMinScore.toString().length] + gcMinScore.toString());
+
+    /*convert pair of difficulties to a single value (not all are valid).
+    0   1   2   3x  4   5   6x  7x   8
+    ee  em  eh  me  mm  mh  he  hm  hh
+    */
+    var gcDif  = gcMinDif * 3 + gcMaxDif;
+
+    return gcSurvival + gcRounds + gcTimeLimit + gcMinScore + gcDif + gcSeed;
 }
 
 function formatDistance(metres)
@@ -768,6 +904,7 @@ function showErrorImage()
 {
     cnvGuess.style.opacity = "1";
     ctxGuess.drawImage(errorImage, 0, 0, cnvGuess.width, cnvGuess.height);
+    showingErrorImage = true;
 }
 
 function getReportData()
@@ -777,6 +914,7 @@ function getReportData()
         gameCode: createGameCode(),
         imageData: currentImageData,
         roundNumber: roundNumber,
+        locationIndex: locationIndex,
         mapType: localStorage.getItem("mapType"),
         screenType: localStorage.getItem("screenType"),
         units: localStorage.getItem("unitType")
@@ -841,4 +979,13 @@ function getSurvivalScore(dist)
     score = Math.floor(Math.max(Math.min(maxScore, score), 0)); //constrain score between 0 and maxscore
 
     return score;
+}
+
+function newStoredSeed()
+{
+    gameParameters.roundOffset = 0;
+    gameParameters.seed = generateSeed();
+    localStorage.setItem("seed", gameParameters.seed);
+    localStorage.setItem("roundOffset", 0);
+    maxOffset = 0;
 }

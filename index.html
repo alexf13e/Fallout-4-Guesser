@@ -132,6 +132,30 @@
         <br>
 
         <h1>Updates</h1>
+        1.5.2 - 1st July 2022
+        <ul>
+            <li>Improved repetition prevention for locations
+                <ul>
+                    <li>When not using a custom seed, a randomly generated one is
+                        kept throughout and between sessions, and changed when all
+                        locations have been gone through (or the number of rounds
+                        in the game would go past the remaining locations)
+                    </li>
+                    <li>To implement this, I had to remove the ability to share
+                        game codes for non-custom games. I know, big loss, I'm sure
+                        everyones really upset
+                    </li>
+                </ul>
+            </li>
+            <li>Fixed custom input ui not updating from code input</li>
+            <li>Tried to shorten the game codes but probably just made it needlessly
+                complicated for like a 30% shortening at best
+            </li>
+            <li>Allowed survival to be chosen in custom mode</li>
+            <li>A few small ui improvements</li>
+            <li>Probably added new bugs, this was a bit of a nightmare to get working</li>
+        </ul>
+
         1.5.1 - 27th June 2022
         <ul>
             <li>Fixed survival score decay rate not resetting between games</li>
