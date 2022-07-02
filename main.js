@@ -909,10 +909,15 @@ function getReportData()
     };
 
     navigator.clipboard.writeText("```" + JSON.stringify(info, null, 3) + "```");
-    alert("Information copied to clipboard. Please send to ▪alex#3059 on discord, " +
-    "along with a description of the problem (if you needed to copy the username " +
-    "and overwrote the copied data, clicking the report button again will copy the " +
-    "same info as before)");
+
+    //alert stops clipboard from being allowed to write in chrome. please forgive me
+    window.setTimeout(() => {
+        alert("Information copied to clipboard. Please send to ▪alex#3059 on discord, " +
+        "along with a description of the problem (if you needed to copy the username " +
+        "and overwrote the copied data, clicking the report button again will copy the " +
+        "same info as before)");
+    }, 500)
+    
 }
 
 function getNormalScore(dist)
