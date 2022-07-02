@@ -29,6 +29,12 @@ input[type=text]
     font-size: var(--fontSmall);
 }
 
+input[type=text]::placeholder
+{
+    color: green;
+    opacity: 1;
+}
+
 p
 {
     margin: 0;
@@ -154,7 +160,6 @@ ul
     display: grid;
     grid-template-columns: 1fr 20fr 20fr;
     grid-gap: 1%;
-    height: fit-content;
 }
 
 #dvMap
@@ -211,6 +216,7 @@ ul
     
     
     pointer-events: all;
+    -webkit-user-select: none;
     user-select: none;
 }
 
@@ -231,7 +237,6 @@ ul
     position: absolute;
     left: 5%;
     width: calc(min(90vw, 164vh));
-    height: fit-content;
 
     transition: left 300ms;
     z-index: 2;
@@ -266,6 +271,7 @@ ul
 
 #roundResults
 {
+    -webkit-user-select: text;
     user-select: text;
     overflow-y: auto;
     margin: 0;

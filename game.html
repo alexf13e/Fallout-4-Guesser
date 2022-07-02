@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="user-scalable=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -63,14 +63,14 @@
                                 A game of 5 rounds lasting 60 seconds each<br>
                                 Try to score as many points as possible
                             </p>
-                            <button id="btnStartGame" class="pipButton" onclick="initialiseGame('normal')">Start Game</button>
+                            <button class="pipButton" onclick="initialiseGame('normal')">Start Game</button>
                         </div>
                         <div id="dvInfoEndless" class="dvModeInfo">
                             <p>
                                 Unlimited rounds and no time or score limit<br>
                                 Play as long as you like
                             </p>
-                            <button id="btnStartGame" class="pipButton" onclick="initialiseGame('endless')">Start Game</button>
+                            <button class="pipButton" onclick="initialiseGame('endless')">Start Game</button>
                         </div>
                         <div id="dvInfoSurvival" class="dvModeInfo">
                             <p>
@@ -78,7 +78,7 @@
                                 Make guesses to earn points back.<br>
                                 Includes harder images and stricter scoring
                             </p>
-                            <button id="btnStartGame" class="pipButton" onclick="initialiseGame('survival')">Start Game</button>
+                            <button class="pipButton" onclick="initialiseGame('survival')">Start Game</button>
                         </div>
                         <div id="dvInfoCustom" class="dvModeInfo">
                             <p>
@@ -88,7 +88,7 @@
                                 <p class="inputStart">></p>
                                 <input id="shareCodeInput"  class="inputLong" type="text" placeholder="Enter code">
                             </span>
-                            <button id="btnStartGame" class="pipButton" onclick="initialiseGame('custom')">Start Game</button>
+                            <button class="pipButton" onclick="initialiseGame('custom')">Start Game</button>
                         </div>
                     </div>
 
