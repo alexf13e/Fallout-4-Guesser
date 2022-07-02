@@ -764,6 +764,8 @@ function createGameCode()
     cant be bothered to make something to convert from base 10 to a higher base
     for the entire code treated as one number, since its too large to use built
     in methods*/
+    if (!gameParameters.length) return null;
+
     var gcSurvival = (gameParameters.survival ? "1" : "0");
     var gcRounds = gameParameters.rounds;
     var gcTimeLimit = gameParameters.timeLimit;
