@@ -62,7 +62,7 @@ function mapInit()
     
         map.on("click", (event) => {
             //don't allow guess marker to be placed before round start or after guess made
-            if (!playerReady || guessConfirmed) return;
+            if (!playerReady || guessConfirmed || !guessImageLoaded) return;
     
             //only have 1 guess marker
             if (guessMarker)
