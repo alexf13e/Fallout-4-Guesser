@@ -764,7 +764,9 @@ function createGameCode()
     cant be bothered to make something to convert from base 10 to a higher base
     for the entire code treated as one number, since its too large to use built
     in methods*/
-    if (!gameParameters.length) return null;
+
+    //if no gameparameters have been set, cant return a code
+    if (Object.keys(gameParameters).length == 0) return null;
 
     var gcSurvival = (gameParameters.survival ? "1" : "0");
     var gcRounds = gameParameters.rounds;
@@ -772,7 +774,7 @@ function createGameCode()
     var gcMinScore = gameParameters.minPassingScore;
     var gcMinDif = gameParameters.minDifficulty;
     var gcMaxDif = gameParameters.maxDifficulty;
-    var gcSeed  = gameParameters.seed.toString(16);
+    var gcSeed  = parseInt(gameParameters.seed).toString(16); //saves maybe 2 characters but may as well
 
     /*
         try to shorten the code by reducing leading 0s
