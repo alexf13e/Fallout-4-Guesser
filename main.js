@@ -82,25 +82,12 @@ const gpNormal = {
     timeLimit: 60,
     minPassingScore: 0,
     minDifficulty: 0,
-    maxDifficulty: 1,
+    maxDifficulty: 2,
     survival: false,
     custom: false,
     seed: 0,
     roundOffset: 0,
     showRemainingRounds: true
-};
-
-const gpSurvival = {
-    rounds: 636,
-    timeLimit: 0,
-    minPassingScore: 0,
-    minDifficulty: 0,
-    maxDifficulty: 2,
-    survival: true,
-    custom: false,
-    seed: 0,
-    roundOffset: 0,
-    showRemainingRounds: false
 };
 
 const gpEndless = {
@@ -110,6 +97,19 @@ const gpEndless = {
     minDifficulty: 0,
     maxDifficulty: 2,
     survival: false,
+    custom: false,
+    seed: 0,
+    roundOffset: 0,
+    showRemainingRounds: false
+};
+
+const gpSurvival = {
+    rounds: 636,
+    timeLimit: 0,
+    minPassingScore: 0,
+    minDifficulty: 0,
+    maxDifficulty: 2,
+    survival: true,
     custom: false,
     seed: 0,
     roundOffset: 0,
