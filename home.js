@@ -14,7 +14,7 @@ window.onload = () => {
     //pick a random background image
     var im = Math.floor(Math.random() * bgImages.length);
     document.getElementById("dvBackground").style.backgroundImage = "url('./assets/f4gimages/img (" + bgImages[im] + ").jpg'";
-    
+
     /*set default values for options, either keeping their default for new users,
     or going to what they set them to before for returning ones*/
     var mapType = localStorage.getItem("mapType");
@@ -24,22 +24,6 @@ window.onload = () => {
     if (mapType) slMap.value = mapType;
     if (screenType) slScreen.value = screenType;
     if (unitType) slUnitType.value = unitType;
-
-    //disable spying for people who don't want it
-    if (!(navigator.doNotTrack == "1" || navigator.doNotTrack == "yes" || window.doNotTrack == "1"))
-    {
-        var glowScript = document.createElement("script");
-        glowScript.src = "https://www.googletagmanager.com/gtag/js?id=G-LB4FV46CJK";
-        glowScript.async = true;
-
-        document.body.appendChild(glowScript);
-
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-LB4FV46CJK');
-    }
 };
 
 function toggleOptions()
