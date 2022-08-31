@@ -13,7 +13,8 @@ const bgImages = [
 window.onload = () => {
     //pick a random background image
     var im = Math.floor(Math.random() * bgImages.length);
-    document.getElementById("dvBackground").style.backgroundImage = "url('./assets/f4gimages/img (" + bgImages[im] + ").jpg'";
+    var imNum = ("" + bgImages[im]).padStart(4, "0");
+    document.getElementById("dvBackground").style.backgroundImage = "url('./assets/f4gimages/img_" + imNum + ".webp'";
 
     /*set default values for options, either keeping their default for new users,
     or going to what they set them to before for returning ones*/
