@@ -914,10 +914,8 @@ function getReportData()
 
     //alert stops clipboard from being allowed to write in chrome. please forgive me
     window.setTimeout(() => {
-        alert("Information copied to clipboard. Please send to ▪alex#3059 on discord, " +
-        "along with a description of the problem (if you needed to copy the username " +
-        "and overwrote the copied data, clicking the report button again will copy the " +
-        "same info as before)");
+        alert("Information copied to clipboard. Please send via discord or email, " +
+        "along with a description of the problem if you have anything to add");
     }, 500)
     
 }

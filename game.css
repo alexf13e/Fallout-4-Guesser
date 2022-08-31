@@ -111,6 +111,20 @@ ul
     width: 100%;
 }
 
+#dvContact
+{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    z-index: 5;
+
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: smaller;
+    text-align: right;
+    color: gray;
+}
+
 #dvCustomLabels
 {
     text-align: right;
@@ -242,19 +256,6 @@ ul
     z-index: 2;
 
     pointer-events: none;
-}
-
-#dvReport
-{
-    position: absolute;
-    top: 0;
-    right: 0;
-
-    z-index: 5;
-
-    font-family: 'Roboto Condensed', sans-serif;
-    font-size: smaller;
-    color: gray;
 }
 
 #dvReport:hover
