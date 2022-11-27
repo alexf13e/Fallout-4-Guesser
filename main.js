@@ -152,7 +152,7 @@ function updateImage()
     hideGuessImage();
     errorImageTimeout = window.setTimeout(showErrorImage, 5000);
 
-    if (!gameParameters.custom)
+    if (!(gameParameters.custom || gameParameters.survival))
     {
         localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) + 1);
         maxOffset = Math.max(parseInt(localStorage.getItem("roundOffset")), maxOffset);
@@ -280,11 +280,11 @@ function newGame(repeat)
     pSurvivalScore.innerHTML = "Score: " + survivalStartingScore;
     pTimer.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
 
-    /*if replaying game, dont regenerate new image order. for custom seed, the
+    /*if replaying game, dont regenerate new image order. for custom or survival seed, the
     round number going back to 1 will make the game repeat. for non-custom seed,
     the round offset will be reduced by the number of rounds in the game, undoing
     the increase at the end of the last game.*/
-    if (!gameParameters.custom)
+    if (!(gameParameters.custom || gameParameters.survival))
     {
         if (repeat)
         {
@@ -301,21 +301,21 @@ function newGame(repeat)
     }
     else if (!repeat)
     {
-        if (firstGame)
-        {
-            //seed was not set by options in initialisation, so a random one is desired
-            if (gameParameters.seed == "") gameParameters.seed = generateSeed();
-        }
-        else
+        if (!firstGame)
         {
             //new game not wanting repeat
             gameParameters.seed = generateSeed();
+        }
+        else
+        {
+            //seed was not set by options in initialisation, so a random one is desired
+            if (gameParameters.seed == "" || gameParameters.seed == 0) gameParameters.seed = generateSeed();
         }
     }
 
     firstGame = false;
 
-    //if a repeating a custom mode, the seed will have to already have been set and will be unchanged
+    //if a repeating custom or survival game, the seed will have to already have been set and will be unchanged
     
 
     /*createRandomImageOrder should be called whenever not repeating in case the
@@ -338,7 +338,7 @@ function newGame(repeat)
         }
     }
     
-    if (gameParameters.custom) addMessage("Game code for sharing: " + createGameCode() + "<br>", false);
+    if (gameParameters.custom || gameParameters.survival) addMessage("Game code for sharing: " + createGameCode() + "<br>", false);
     updateRoundCounter();
 
     if (map)
@@ -456,11 +456,12 @@ function confirmGuess()
 
     guessPlaced = false;
 
-    //update peak score stat
+    //update peak score stat and score decay rate
     if (gameParameters.survival)
     {
         if (totalScore > survivalPeakScore) survivalPeakScore = totalScore;
-        scoreDecayPerSecond = Math.min(scoreDecayPerSecond + 50, 750);
+        if (gamer) scoreDecayPerSecond = 100; //reset score decay rate as reward for good guess
+        else scoreDecayPerSecond = Math.min(scoreDecayPerSecond + 50, 750);
     }
 
     //check if game is over
@@ -507,7 +508,7 @@ function nextRound()
     //deal with endless mode
     if (locationIndex >= allImageData.length)
     {
-        //should only reach here in endless and survival, non custom
+        //should only reach here in endless, non custom
         locationIndex = 0;
         newStoredSeed();
         createRandomImageOrder();
@@ -792,7 +793,7 @@ function createGameCode()
     gcTimeLimit = (gcTimeLimit == 0 ? "0" : zeroChars[3 - gcTimeLimit.toString().length] + gcTimeLimit.toString());
     gcMinScore = (gcMinScore == 0 ? "0" : zeroChars[4 - gcMinScore.toString().length] + gcMinScore.toString());
 
-    /*convert pair of difficulties to a single value (not all are valid).
+    /*convert pair of difficulties to a single value (not all are valid - min difficulty must be less than max).
     0   1   2   3x  4   5   6x  7x   8
     ee  em  eh  me  mm  mh  he  hm  hh
     */

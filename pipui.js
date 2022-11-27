@@ -165,8 +165,8 @@ function pipNavChange(screen)
     
     pCurrentScore.style.display = (screen != "inv" && guessConfirmed && (!gameParameters.survival || gameEnded)) ? "block" : "none";
     btnNewGame.style.display = (screen == "data" && gameEnded) ? "block" : "none";
-    //dont show repeat button for survival or endless, since the images could have been regenerated and repeating isnt possible
-    btnRepeatGame.style.display = (screen == "data" && gameEnded && (gameParameters.custom || gameParameters.showRemainingRounds)) ? "block" : "none";
+    //dont show repeat button for endless, since the images could have been regenerated and repeating isnt possible
+    btnRepeatGame.style.display = (screen == "data" && gameEnded && (gameParameters.custom || gameParameters.survival || gameParameters.showRemainingRounds)) ? "block" : "none";
     btnEndData.style.display = (screen == "map" && gameEnded) ? "block" : "none";
 
     //set nav dial image
