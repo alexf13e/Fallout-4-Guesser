@@ -329,8 +329,12 @@ function statsUpdateRound(roundScore, dist, roundTime)
         if (roundScore == 5001) playerStats.general.specialScores.value++;
     }
 
-    if (dist) playerStats.general.totalGuessDist.value += dist;
-    if (!playerStats.general.closestGuessDist.value || dist < playerStats.general.closestGuessDist.value) playerStats.general.closestGuessDist.value = dist;
+    if (dist)
+    {
+        playerStats.general.totalGuessDist.value += dist;
+        if (!playerStats.general.closestGuessDist.value || dist < playerStats.general.closestGuessDist.value) playerStats.general.closestGuessDist.value = dist;
+    }
+    
     playerStats.general.timePlayed.value += roundTime;
     if (!playerStats.general.quickestRound.value || roundTime < playerStats.general.quickestRound.value) playerStats.general.quickestRound.value = roundTime;
 
