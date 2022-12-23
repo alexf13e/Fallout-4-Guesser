@@ -14,9 +14,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
 
-    <script src="home.js" defer></script>
+    <script src="js/home.js" defer></script>
 
-    <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="css/home.css" />
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
 
     <title>Fallout 4 Guesser</title>
@@ -43,8 +43,8 @@
             <span>
                 <p class="inputStart">v</p>
                 <select id="slScreen">
-                    <option value="dirt1" selected>Fancy dirt</option>
-                    <option value="dirt2">Regular dirt</option>
+                    <option value="dirt1" selected>Regular dirt</option>
+                    <option value="dirt2">Fancy dirt</option>
                     <option value="clean">Clean</option>
                 </select>
             </span>
@@ -57,8 +57,11 @@
                     <option value="imperial">Imperial</option>
                 </select>
             </span>
-        </div>
 
+            <label for="cbTracking">Count my views of the game</label>
+            <input id="cbTracking" type="checkbox" checked>
+        </div>
+        <button id="btnClearData" class="menuButton" onclick="clearData()">Clear Data</button>
     </div>
 
     <div id="dvInfoBorder" class="menuItemBorder"></div>
@@ -67,7 +70,7 @@
         <p>
             Figure out where an image was taken in the world of Fallout 4 and get
             a score out of 5000 based on how close you are.<br>
-            There are currently 636 locations accross the Commonwealth, 3 premade
+            There are currently 788 locations accross the Commonwealth, 3 premade
             modes, and custom modes where you can set your own rules and get a code
             for others to play with the same set of rules and locations.
             <br><br>
@@ -75,6 +78,14 @@
             is actually fun and worth pursuing for other games:<br>
             <a href="https://www.geoguessr.com" target="_blank" rel="noreferrer noopener">https://www.geoguessr.com</a><br>
             <a href="https://gtaguessr.com" target="_blank" rel="noreferrer noopener">https://gtaguessr.com</a>
+            <br><br>
+            If you are someone with a following and you show this game off, I'd like
+            to hear about it, so please feel free to contact me (details in top right
+            in game).<br>
+            Sometimes like 200 people just appear from nowhere and I'd be interested
+            if there was something behind it (edit: literally the day before I 
+            posted the 1.6 update it happened again)
+        
         </p>
         <br>
         <h1>Controls</h1>
@@ -86,6 +97,26 @@
             to show/hide the Pip-Boy
         </p>
         <br>
+
+        <h1>Known Bugs</h1>
+        <ul>
+            <li>Some cars, metal crates and tarp cover things are not the right colour
+                in the satellite map (e.g. some red tarps are blue, some rusty cars
+                don't show rust, some orange crates are red)</li>
+            <li>The satellite map has 3 USS Constitutions (one at the skyscraper, one
+                at the bank where it starts, and for some reason one slightly in front
+                of the bank?)</li>
+            <li>Not really a bug but the pipboy style map
+                (i.e. the non-satellite one) is quite inaccurate in some places.
+                Also sometimes it flies to the side while zooming.</li>
+        </ul>
+        <p>If you see something wrong with the game, there is a button to click
+            which will copy useful information. Just send that to me with a
+            description of what the issue seems to be, and maybe I'll even try
+            and fix it.
+        </p>
+        <br>
+
         <h1>Please don't sue me Todd</h1>
         <p>
             This is a fan made game. I am in no way related to Bethesda.
@@ -114,26 +145,56 @@
         </ul>
         <br>
 
-        <h1>Known Bugs</h1>
-        <ul>
-            <li>Some cars, metal crates and tarp cover things are not the right colour
-                in the satellite map (e.g. some red tarps are blue, some rusty cars
-                don't show rust, some orange crates are red)</li>
-            <li>The satellite map has 3 USS Constitutions (one at the skyscraper, one
-                at the bank where it starts, and for some reason one slightly in front
-                of the bank?)</li>
-            <li>Not really a bug (by me at least) but the pipboy style map
-                (i.e. the non-satellite one) is quite inaccurate in some places.
-                Also sometimes it flies to the side while zooming.</li>
-        </ul>
-        <p>If you see something wrong with the game, there is a button to click
-            which will copy useful information. Just send that to me with a
-            description of what the issue seems to be, and maybe I'll even try
-            and fix it.
-        </p>
-        <br>
-
         <h1>Updates</h1>
+        1.6 - 23rd December 2022
+        <ul>
+            <li>
+                Added 152 new locations, for a total of 788
+            </li>
+            <li>
+                Added statistics and a progression/leveling system
+                <ul>
+                    <li>
+                        Level - earn xp by completing rounds, with better scores
+                        in harder modes rewarding more
+                    </li>
+                    <li>
+                        Rank - start as a lowly radroach and work your way up by
+                        getting perfect scores
+                    </li>
+                    <li>
+                        If you do really well, you'll eventually become legendary
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Added a tutorial for the first game played, since I'm sure at least
+                someone must have gotten a glowing sea image for their first round
+                and cried
+            </li>
+            <li>
+                Increased the round duration on normal to 1 minute 30, since 1
+                minute felt a bit short for actually searching and figuring
+                out where you are
+            </li>
+            <li>
+                Added option to clear game data
+            </li>
+            <li>
+                Added option to disable analytics within the game
+            </li>
+            <li>
+                Some minor (visible) UI changes
+            </li>
+            <li>
+                Loading progress display so its clear if the game is actually doing
+                anything on slower connections
+            </li>
+            <li>
+                Lots of code changes to make it less of a nightmare to maintain
+            </li>
+        </ul>
+
         1.5.5 - 27th November 2022
         <ul>
             <li>
@@ -313,13 +374,14 @@
 
     <div id="dvAnalytics">
         <p>The game uses google analytics because I find it interesting to see how
-            many people have played it. I have tried to turn off most of the
-            creepy stuff it can track, so as far as I am aware all it is storing
-            is how many people visit the page, what country they are from, and
-            whether they are new or returning (which seems to be as little as I can do).
-            The game should respect the browser "do not track" setting and not
-            load the analytics if you have enabled it. This page isn't counted,
-            only the main game is.
+            many people have played it. I have tried to turn off anything unnecceasry,
+            so (as far as I am aware) all I can see is the number of views, whether
+            they were first time visits or not, how long the page was open, and
+            the country the view was from.
+            The game will respect the browser "do not track" setting and not
+            load the analytics if you have enabled it, and there is also an option
+            on this page to disable it - either or both will work. This page isn't
+            counted, only the main game is.
             Hope thats ok.</p>
     </div>
     

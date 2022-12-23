@@ -15,20 +15,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
 
-    <script src="map.js" defer></script>
-    <script src="pipui.js" defer></script>
-    <script src="events.js" defer></script>
-    <script src="PZImage.js" defer></script>
-    <script src="main.js" defer></script>
-    <script src="customInput.js" defer></script>
-    <script src="analytics.js" defer></script>
-
-    <link rel="stylesheet" href="game.css" />
+    <script src="js/PZImage.js" defer></script>
+    <script src="js/map.js" defer></script>
+    <script src="js/events.js" defer></script>
+    <script src="js/gameModes.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/customInput.js" defer></script>
+    <script src="js/analytics.js" defer></script>
+    <script src="js/PipUIElement.js" defer></script>
+    <script src="js/elements.js" defer></script>
+    <script src="js/pipui.js" defer></script>
+    <script src="js/stats.js" defer></script>
+    
+    <link rel="stylesheet" href="css/game.css" />
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
 
     <title>Fallout 4 Guesser</title>
 </head>
 <body>
+
+    <p id="pLoadingProgress"></p>
 
     <button id="btnTogglePip" onclick="pipToggleVisible()">
         <canvas id="cnvTogglePip" width="256" height="256"></canvas>
@@ -40,7 +46,9 @@
 
         <div id="dvPBScreenBG">
             <div id="dvPBScreen">
-                <div id="dvInvScreen" class="sPipNav">
+                <div id="dvScreenStats" class="sPipNav"></div>
+
+                <div id="dvScreenInv" class="sPipNav">
                     <div id="dvTitle">
                         <p>Select gamemode</p><br>
                     </div>
@@ -58,6 +66,7 @@
                             <button id="btnModeEndless" class="pipButton">Endless</button>
                             <button id="btnModeSurvival" class="pipButton">Survival</button>
                             <button id="btnModeCustom" class="pipButton">Custom</button>
+                            <button id="btnModeTutorial" class="pipButton">Tutorial</button>
                         </div>
                         <div id="dvInfoNormal" class="dvModeInfo">
                             <p>
@@ -90,6 +99,12 @@
                                 <input id="shareCodeInput"  class="inputLong" type="text" placeholder="Enter code">
                             </span>
                             <button class="pipButton" onclick="initialiseGame('custom')">Start Game</button>
+                        </div>
+                        <div id="dvInfoTutorial" class="dvModeInfo">
+                            <p>
+                                Play a game with preset locations to get the hang of things
+                            </p>
+                            <button class="pipButton" onclick="initialiseGame('normal')">Start Game</button>
                         </div>
                     </div>
 
@@ -152,18 +167,16 @@
                     <p id="pRoundCount"></p>
                     <p id="pTimer"></p>
                     <p id="pMinScore"></p>
-                    <p id="pSurvivalScore"></p>
+                    <p id="pCurrentScore"></p>
                 </div>
 
-                <!-- Separate from gameInfo since it wants to swap visibilty with
-                the gameInfo elements, and easier to just hide their whole div -->
-                <p id="pCurrentScore"></p>
-
-                <div id="dvMapScreen" class="sPipNav">
+                <div id="dvScreenMap" class="sPipNav">
                     <div id="dvMap"></div>
+                    <div id="dvMapBlurTop" class="mapBlur"></div>
+                    <div id="dvMapBlurBottom" class="mapBlur"></div>
                 </div>
 
-                <div id="dvDataScreen" class="sPipNav">
+                <div id="dvScreenData" class="sPipNav">
                     <ul id="roundResults"></ul>
                 </div>
 
@@ -182,6 +195,7 @@
         </div>
 
         <div id="dvPBNav">
+            <button id="btnStat" class="btnNav" onclick="pipNavChange('stats')"></button>
             <button id="btnInv" class="btnNav" onclick="pipNavChange('inv')"></button>
             <button id="btnData" class="btnNav" onclick="pipNavChange('data')"></button>
             <button id="btnMap" class="btnNav" onclick="pipNavChange('map')"></button>
@@ -192,7 +206,7 @@
         <div id="dvReport" onclick="getReportData()">
             Click here to get info for a bug report
         </div>   
-        Email: alex[dot]w[dot]faulkner13[at]gmail.com<br>
+        Email: fallout4guesser@gmail.com<br>
         Discord: ▪alex#3059
     </div>
     </div>
