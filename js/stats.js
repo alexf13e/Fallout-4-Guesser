@@ -297,11 +297,9 @@ function statsCalculateLevel(xp)
     return Math.floor(level);
 }
 
-function statsCalculateXpToNextLevel()
+function statsCalculateXpForLevel(level)
 {
-    let l = playerStats.rating.level + 1;
-    let xpNext = 10 * l * l + 90 * l - 100;
-    return xpNext - playerStats.rating.xp;
+    return 10 * level * level + 90 * level - 100;
 }
 
 function statsCalculateTitle()

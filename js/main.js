@@ -531,7 +531,10 @@ function enableSummary()
             " " + playerStats.rating.title);
     }
 
-    addMessage(Math.ceil(statsCalculateXpToNextLevel()) + "xp to level " + (playerStats.rating.level + 1));
+    let xpIntoCurrentLevel = Math.ceil(playerStats.rating.xp - statsCalculateXpForLevel(playerStats.rating.level));
+    let xpDifferenceForLevel = Math.ceil(statsCalculateXpForLevel(playerStats.rating.level + 1) - statsCalculateXpForLevel(playerStats.rating.level));
+    let xpMessage = xpIntoCurrentLevel + "/" + xpDifferenceForLevel + "xp to level " + (playerStats.rating.level + 1);
+    addMessage(xpMessage);
         
     uibtnNewGame.element.textContent = "New Game" + (gameParameters.custom ? " (random seed)" : "");
 
