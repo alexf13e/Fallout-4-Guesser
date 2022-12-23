@@ -324,7 +324,7 @@ function statsUpdateRound(roundScore, dist, roundTime)
         stats if in survival*/
         playerStats.general.totalScore.value += roundScore;
         if (roundScore > playerStats.general.highestRoundScore.value) playerStats.general.highestRoundScore.value = roundScore;
-        playerStats.general.averageRoundScore.value = (playerStats.general.totalScore.value / playerStats.general.roundsPlayed.value).toFixed(2);
+        playerStats.general.averageRoundScore.value = (playerStats.general.totalScore.value / Math.max(playerStats.general.roundsPlayed.value, 1)).toFixed(2);
         if (roundScore >= 5000) playerStats.general.perfectScores.value++;
         if (roundScore == 5001) playerStats.general.specialScores.value++;
     }
@@ -351,8 +351,9 @@ function statsUpdateRound(roundScore, dist, roundTime)
     {
         //preset survival mode only
         if (roundNumber > playerStats.survival.highestRoundSurvived.value && gameOverStatus != gameOverTypes.FAILED_SCOREDRAIN) playerStats.survival.highestRoundSurvived.value = roundNumber;
+        playerStats.survival.totalRoundsSurvived++;
         playerStats.survival.totalScore.value += roundScore;
-        playerStats.survival.averageRoundScore.value = (playerStats.survival.totalScore.value / playerStats.survival.totalRoundsSurvived.value).toFixed(2);
+        playerStats.survival.averageRoundScore.value = (playerStats.survival.totalScore.value / Math.max(playerStats.survival.totalRoundsSurvived.value, 1)).toFixed(2);
         if (survivalPeakScore > playerStats.survival.highestPeakScore.value) playerStats.survival.highestPeakScore.value = survivalPeakScore;
         playerStats.survival.timePlayed.value += roundTime;
     }
