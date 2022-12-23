@@ -33,7 +33,7 @@ if (!playerStats)
             },
 
             averageRoundScore: {
-                name: "Recent average score per round",
+                name: "Average score per round",
                 value: 0,
                 formatting: statFormattingTypes.NONE
             },
@@ -329,7 +329,7 @@ function statsUpdateRound(roundScore, dist, roundTime)
         if (roundScore == 5001) playerStats.general.specialScores.value++;
     }
 
-    playerStats.general.totalGuessDist.value += dist;
+    if (distanceMetres) playerStats.general.totalGuessDist.value += dist;
     if (!playerStats.general.closestGuessDist.value || dist < playerStats.general.closestGuessDist.value) playerStats.general.closestGuessDist.value = dist;
     playerStats.general.timePlayed.value += roundTime;
     if (!playerStats.general.quickestRound.value || roundTime < playerStats.general.quickestRound.value) playerStats.general.quickestRound.value = roundTime;
