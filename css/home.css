@@ -21,6 +21,12 @@ body
     background-color: black;
 }
 
+input[type=checkbox]
+{
+    width: fit-content;
+    margin-left: 0;
+}
+
 h1
 {
     margin: 0;
