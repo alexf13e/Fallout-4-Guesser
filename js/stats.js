@@ -391,8 +391,8 @@ function statsUpdateGame(gameScore, gameTime)
 function statsAddGameCode(code)
 {
     //store last 5 game codes, most recent is first item in array
-    playerStats.general.previousGameCodes.value.unshift(code);
-    if (playerStats.general.previousGameCodes.value.length > 5) playerStats.general.previousGameCodes.value.pop();
+    playerStats.previousGameCodes.value.unshift(code);
+    if (playerStats.previousGameCodes.value.length > 5) playerStats.previousGameCodes.value.pop();
 
     localStorage.setItem("playerStats", JSON.stringify(playerStats));
 }
