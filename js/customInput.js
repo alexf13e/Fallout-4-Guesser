@@ -1,11 +1,11 @@
 
-var paramRounds = document.getElementById("paramRounds");
-var paramTimeLimit = document.getElementById("paramTimeLimit");
-var paramMinScore = document.getElementById("paramMinScore");
-var paramMinDifficulty = document.getElementById("paramMinDifficulty");
-var paramMaxDifficulty = document.getElementById("paramMaxDifficulty");
-var paramMode = document.getElementById("paramMode");
-var paramSeed = document.getElementById("paramSeed");
+let paramRounds = document.getElementById("paramRounds");
+let paramTimeLimit = document.getElementById("paramTimeLimit");
+let paramMinScore = document.getElementById("paramMinScore");
+let paramMinDifficulty = document.getElementById("paramMinDifficulty");
+let paramMaxDifficulty = document.getElementById("paramMaxDifficulty");
+let paramMode = document.getElementById("paramMode");
+let paramSeed = document.getElementById("paramSeed");
 
 function validateInput(event)
 {
@@ -145,9 +145,9 @@ function readGameCode()
         return;
     }
 
-    var codeParts = ["", "", "", "", "", "", ""];
-    var leadingZeros = {"a": 1, "b": 2, "c": 3};
-    var p = 1;
+    let codeParts = ["", "", "", "", "", "", ""];
+    let leadingZeros = {"a": 1, "b": 2, "c": 3};
+    let p = 1;
 
     codeParts[0] = parseInt(code[0]);
     code = code.slice(1);
@@ -165,11 +165,11 @@ function readGameCode()
                 continue;
             }
 
-            var pe; //part end
+            let pe; //part end
             if (p == 3) pe = 4;
             else pe = 3;
     
-            var lz = leadingZeros[code[0]];
+            let lz = leadingZeros[code[0]];
             if (lz)
             {
                 code = code.slice(1);
