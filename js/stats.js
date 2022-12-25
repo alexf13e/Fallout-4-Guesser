@@ -355,7 +355,7 @@ function statsUpdateRound(roundScore, dist, roundTime)
     {
         //preset survival mode only
         if (roundNumber > playerStats.survival.highestRoundSurvived.value && gameOverStatus != gameOverTypes.FAILED_SCOREDRAIN) playerStats.survival.highestRoundSurvived.value = roundNumber;
-        playerStats.survival.totalRoundsSurvived++;
+        playerStats.survival.totalRoundsSurvived.value++;
         playerStats.survival.totalScore.value += roundScore;
         playerStats.survival.averageRoundScore.value = (playerStats.survival.totalScore.value / Math.max(playerStats.survival.totalRoundsSurvived.value, 1)).toFixed(2);
         if (survivalPeakScore > playerStats.survival.highestPeakScore.value) playerStats.survival.highestPeakScore.value = survivalPeakScore;
