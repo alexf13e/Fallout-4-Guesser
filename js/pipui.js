@@ -183,8 +183,8 @@ function updateRoundCounter()
 
 function updateCurrentScoreDisplay(score, gamerScore)
 {
-    pCurrentScore.style.color = gamerScore ? specialColour : greenColour;
-    pCurrentScore.innerHTML = "Scored " + score + " points";
+    uipCurrentScore.element.style.color = gamerScore ? specialColour : greenColour;
+    uipCurrentScore.element.innerHTML = "Scored " + score + " points";
 }
 
 function pipDraw()

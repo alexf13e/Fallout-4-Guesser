@@ -263,6 +263,7 @@ function ngUI()
     //reset the game ui to show appropriate elements for the start of a new game
     uibtnConfirmGuess.element.disabled = true;
     uipMinScore.element.style.color = greenColour;
+    uipCurrentScore.element.style.color = greenColour;
 
     roundResultsList.innerHTML = "";
     uipTimer.element.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
@@ -455,6 +456,7 @@ function nextRound()
 
     //update ui
     uipTimer.element.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
+    uipCurrentScore.element.style.color = greenColour;
     updateRoundCounter();
 
     //reset map
