@@ -154,6 +154,7 @@ function createAnswerArray(text)
     //create array containing information for each image
     allImageData = JSON.parse(text);
     document.getElementById("paramRounds").max = allImageData.length;
+    gpSurvival.updateRoundMax(allImageData.length);
 }
 
 function updateImage()

@@ -139,7 +139,7 @@ const gpEndless = {
 };
 
 const gpSurvival = {
-    rounds: 636,
+    rounds: -1,
     timeLimit: 0,
     minPassingScore: 0,
     minDifficulty: 0,
@@ -149,6 +149,11 @@ const gpSurvival = {
     seed: 0,
     roundOffset: 0,
     showRemainingRounds: false,
+
+    updateRoundMax(num)
+    {
+        this.rounds = num;
+    },
 
     manageSeed(repeat)
     {
