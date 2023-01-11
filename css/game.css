@@ -354,6 +354,11 @@ ul
     top: 20%;
 }
 
+.leaflet-overlay-pane
+{
+    z-index: 100;
+}
+
 .mapBlur
 {
     position: absolute;

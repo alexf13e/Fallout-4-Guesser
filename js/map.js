@@ -10,7 +10,10 @@ L.TileLayer.GameMap = L.TileLayer.extend({
         -1 at bottom. my tiles are 0,0 at top left, so need to convert y coordinate
         (probably doing something wrong but this works so whatever)*/
         //console.log("z: " + coords.z + ", y: " + coords.y + ", x: " + coords.x);
-        return "assets/tiles/" + coords.z + "/" + (coords.y + 4 * Math.pow(2, coords.z)) + " " + (coords.x) + ".jpg";
+        let z = parseInt(coords.z)
+        let x = coords.x;
+        let y = (coords.y + 4 * Math.pow(2, z));
+        return "assets/tiles/" + z + "/" + y + " " + x + ".jpg";
     }
 })
 
@@ -18,6 +21,7 @@ L.TileLayer.gameMap = function() {
     return new L.TileLayer.GameMap("", {
         bounds: mapBounds,
         minZoom: -2,
+        maxNativeZoom: 4
     });
 }
 
@@ -30,7 +34,8 @@ let guessLineOptions = {
     color: 'yellow',
     weight: 3,
     opacity: 0.8,
-    smoothFactor: 1
+    smoothFactor: 1,
+    pane: "tilePane"
 };
 
 let waypointIcon = L.icon({
@@ -53,7 +58,7 @@ function mapInit()
         map = L.map("dvMap", {
             crs: L.CRS.Simple,
             minZoom: -2,
-            maxZoom: 4,
+            maxZoom: 5,
             zoomSnap: 0.5,
             maxBounds: panBounds,
             maxBoundsViscosity: 0.5,
@@ -85,6 +90,7 @@ function mapInit()
                 //centreOffsetX, centreOffsetY, game units per map unit
                 mapTranslations = [512, 587, 256];
                 L.TileLayer.gameMap().addTo(map);
+                L.imageOverlay("./assets/tiles/-2/0 0.jpg", mapBounds).addTo(map);
                 break;
 
             case "ingame":

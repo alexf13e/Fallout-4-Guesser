@@ -80,11 +80,8 @@
             <a href="https://gtaguessr.com" target="_blank" rel="noreferrer noopener">https://gtaguessr.com</a>
             <br><br>
             If you are someone with a following and you show this game off, I'd like
-            to hear about it, so please feel free to contact me (details in top right
+            to see you play it, so please feel free to contact me (details in top right
             in game).<br>
-            Sometimes like 200 people just appear from nowhere and I'd be interested
-            if there was something behind it (edit: literally the day before I 
-            posted the 1.6 update it happened again)
         
         </p>
         <br>
@@ -100,12 +97,12 @@
 
         <h1>Known Bugs</h1>
         <ul>
-            <li>Some cars, metal crates and tarp cover things are not the right colour
-                in the satellite map (e.g. some red tarps are blue, some rusty cars
-                don't show rust, some orange crates are red)</li>
-            <li>The satellite map has 3 USS Constitutions (one at the skyscraper, one
-                at the bank where it starts, and for some reason one slightly in front
-                of the bank?)</li>
+            <li>
+                Some areas of water on the satellite map have visible borders between
+                differently coloured regions. Not much I can do, this is just how
+                they are in the actual game and the map rendering program renders
+                them as they are.
+            </li>
             <li>Not really a bug but the pipboy style map
                 (i.e. the non-satellite one) is quite inaccurate in some places.
                 Also sometimes it flies to the side while zooming.</li>
@@ -146,6 +143,63 @@
         <br>
 
         <h1>Updates</h1>
+        1.6.1 - 11th January 2023
+        <ul>
+            <li>
+                New and improved map
+                <ul>
+                    <li>
+                        Now with 33% less USS Constituion
+                    </li>
+                    <li>
+                        Slightly nicer render with better lighting and more accurate
+                        water colours, requiring less poor image editing from me
+                        to make it look right
+                    </li>
+                    <li>
+                        Cars and other objects should now have more accurate colours
+                        and textures (rusty cars are rusty, crates and those cover
+                        things on buildings should now be the actual colour)
+                    </li>
+                    <li>
+                        Note that you may see weird blue/purple blobs in some places,
+                        these are the oil puddles that ignite when shot which I guess
+                        are now included in the render by the program I use
+                    </li>
+                </ul>
+                </li>
+                <li>
+                Other features related to the map to make it look nicer
+                <ul>
+                    <li>
+                        Low-res background image instead of nothing when a tile
+                        hasn't loaded
+                        <ul>
+                            <li>
+                                Should also help alleviate an issue where at some
+                                zoom levels, the tiles don't quite meet, and for
+                                some reason having both a filter and backdrop
+                                filter on the background of the ui on the map
+                                causes the gap to become much more noticeable
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        One more zoom level
+                        <ul>
+                            <li>
+                                No extra zoom has been rendered, the tiles just
+                                stretch, but I found this helps on higher resolution
+                                screens (due to technical reasons, where basically
+                                higher pixel density means things are physically
+                                smaller on the screen)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
         1.6 - 23rd December 2022
         <ul>
             <li>

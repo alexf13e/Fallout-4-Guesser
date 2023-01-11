@@ -6,183 +6,185 @@ const statFormattingTypes = Object.freeze({
 });
 
 const statsVersion = 1;
+const defaultStats = {
+    version: 1,
+    general: {
+        roundsPlayed: {
+            name: "Rounds played",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        totalScore: {
+            name: "Total score",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        highestRoundScore: {
+            name: "Highest score in one round",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        averageRoundScore: {
+            name: "Average score per round",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        perfectScores: {
+            name: "Perfect scores",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+        
+        specialScores: {
+            name: "Special scores",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        totalGuessDist: {
+            name: "Total distance from correct locations",
+            value: 0,
+            formatting: statFormattingTypes.DISTANCE
+        },
+
+        closestGuessDist: {
+            name: "Closest guess distance",
+            value: null,
+            formatting: statFormattingTypes.DISTANCE
+        },
+        
+        timePlayed: {
+            name: "Time played",
+            value: 0,
+            formatting: statFormattingTypes.TIME
+        },
+
+        quickestRound: {
+            name: "Quickest round",
+            value: null,
+            formatting: statFormattingTypes.TIME
+        }
+    },
+
+    normal: {
+        gamesCompleted: {
+            name: "Games completed",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        highestGameScore: {
+            name: "Highest score in one game",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        perfectGames: {
+            name: "Perfect games",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        timePlayed: {
+            name: "Time played",
+            value: 0,
+            formatting: statFormattingTypes.TIME
+        },
+
+        quickestGame: {
+            name: "Quickest game",
+            value: null,
+            formatting: statFormattingTypes.TIME
+        }
+    },
+
+    endless: {
+        roundsPlayed: {
+            name: "Rounds played",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        timePlayed: {
+            name: "Time played",
+            value: 0,
+            formatting: statFormattingTypes.TIME
+        }
+    },
+
+    survival: {
+        highestRoundSurvived: {
+            name: "Highest round survived",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        totalRoundsSurvived: {
+            name: "Total rounds survived",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        totalScore: {
+            name: "Total score",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        averageRoundScore: {
+            name: "Average score per round",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        highestPeakScore: {
+            name: "Highest peak score",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+        
+        deaths: {
+            name: "Number of deaths",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        },
+
+        timePlayed: {
+            name: "Time played",
+            value: 0,
+            formatting: statFormattingTypes.TIME
+        },
+        
+        cars: {
+            name: "Brand new cars",
+            value: 0,
+            formatting: statFormattingTypes.NONE
+        }
+    },
+
+    previousGameCodes: {
+        name: "Previous game codes (newest at top)",
+        value: []
+    },
+
+    rating: {
+        xp: 0,
+        level: 1,
+        title: "Radroach",
+        legendary: false
+    }
+};
+
 let playerStats = localStorage.getItem("playerStats");
 if (!playerStats)
 {
     //No stored stats, generate default ones
     //null values aren't valid yet  (e.g. min distance would have to start at infinity, would look weird when displayed)
-    playerStats = {
-        version: 1,
-        general: {
-            roundsPlayed: {
-                name: "Rounds played",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            totalScore: {
-                name: "Total score",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            highestRoundScore: {
-                name: "Highest score in one round",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            averageRoundScore: {
-                name: "Average score per round",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            perfectScores: {
-                name: "Perfect scores",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-            
-            specialScores: {
-                name: "Special scores",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            totalGuessDist: {
-                name: "Total distance from correct locations",
-                value: 0,
-                formatting: statFormattingTypes.DISTANCE
-            },
-
-            closestGuessDist: {
-                name: "Closest guess distance",
-                value: null,
-                formatting: statFormattingTypes.DISTANCE
-            },
-            
-            timePlayed: {
-                name: "Time played",
-                value: 0,
-                formatting: statFormattingTypes.TIME
-            },
-
-            quickestRound: {
-                name: "Quickest round",
-                value: null,
-                formatting: statFormattingTypes.TIME
-            }
-        },
-
-        normal: {
-            gamesCompleted: {
-                name: "Games completed",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            highestGameScore: {
-                name: "Highest score in one game",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            perfectGames: {
-                name: "Perfect games",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            timePlayed: {
-                name: "Time played",
-                value: 0,
-                formatting: statFormattingTypes.TIME
-            },
-
-            quickestGame: {
-                name: "Quickest game",
-                value: null,
-                formatting: statFormattingTypes.TIME
-            }
-        },
-
-        endless: {
-            roundsPlayed: {
-                name: "Rounds played",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            timePlayed: {
-                name: "Time played",
-                value: 0,
-                formatting: statFormattingTypes.TIME
-            }
-        },
-
-        survival: {
-            highestRoundSurvived: {
-                name: "Highest round survived",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            totalRoundsSurvived: {
-                name: "Total rounds survived",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            totalScore: {
-                name: "Total score",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            averageRoundScore: {
-                name: "Average score per round",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            highestPeakScore: {
-                name: "Highest peak score",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-            
-            deaths: {
-                name: "Number of deaths",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            },
-
-            timePlayed: {
-                name: "Time played",
-                value: 0,
-                formatting: statFormattingTypes.TIME
-            },
-            
-            cars: {
-                name: "Brand new cars",
-                value: 0,
-                formatting: statFormattingTypes.NONE
-            }
-        },
-
-        previousGameCodes: {
-            name: "Previous game codes (newest at top)",
-            value: []
-        },
-
-        rating: {
-            xp: 0,
-            level: 1,
-            title: "Radroach",
-            legendary: false
-        }
-    };
+    Object.assign(playerStats, defaultStats);
 
     localStorage.setItem("playerStats", JSON.stringify(playerStats));
 }
@@ -231,8 +233,8 @@ const ratingTitles = [
     "Super Mutant Brute",
     "Super Mutant Butcher",
     "Minuteman",
-    "Minuteman General",
     "Minuteman Lieutenant",
+    "Minuteman General",
     "Gunner",
     "Guner Private",
     "Gunner Sergent",
