@@ -184,6 +184,7 @@ if (!playerStats)
 {
     //No stored stats, generate default ones
     //null values aren't valid yet  (e.g. min distance would have to start at infinity, would look weird when displayed)
+    playerStats = {};
     Object.assign(playerStats, defaultStats);
 
     localStorage.setItem("playerStats", JSON.stringify(playerStats));
