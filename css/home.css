@@ -146,6 +146,8 @@ select > option
 #dvOptions
 {
     display: none;
+    position: relative;
+    padding-left: 1.5%;
     width: 100%;
 
     grid-template-rows: 1fr 1fr;
@@ -166,7 +168,6 @@ select > option
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 25px;
     padding-left: 1.5%;
-    left: -2%;
 }
 
 .menuButton:hover
