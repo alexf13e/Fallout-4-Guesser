@@ -65,6 +65,10 @@ ul
     padding: 0;
 }
 
+#btnGetHint
+{
+    margin-top: auto;
+}
 
 #btnTogglePip
 {
@@ -215,16 +219,16 @@ ul
 #dvPBNav
 {
     position: absolute;
-    top: 14%;
-    left: 80.6%;
-    width: 4%;
-    height: 9.5%;
+    top: 13.6%;
+    left: 79.9%;
+    width: 4.5%;
+    height: 12.6%;
 
     z-index: 2;
     pointer-events: all;
 
     display: grid;
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
 }
 
 #dvPBScreen
@@ -281,6 +285,25 @@ ul
     cursor: pointer;
 }
 
+#dvRadioContent
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1%;
+}
+
+#dvRadioLeft
+{
+    display: flex;
+    flex-direction: column;
+}
+
+#dvRadioLeft > p
+{
+    text-align: left;
+    font-size: var(--fontMed);
+}
+
 #dvScreenMap
 {
     pointer-events: none;
@@ -290,6 +313,12 @@ ul
 {
     overflow: auto;
     user-select: text;
+}
+
+#imHint
+{
+    width: 100%;
+    border: solid 2px var(--cPipGreen);
 }
 
 #pCurrentScore
@@ -374,11 +403,6 @@ ul
     color: var(--cClear);
 }
 
-.sPipNav
-{
-    display: none;
-}
-
 .pipButton
 {
     -webkit-appearance: none;
@@ -428,6 +452,11 @@ ul
 .inputLong
 {
     width: 70%;
+}
+
+.sPipNav
+{
+    display: none;
 }
 
 .statHeading

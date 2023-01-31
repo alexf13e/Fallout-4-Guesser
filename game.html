@@ -183,6 +183,25 @@
                     <ul id="roundResults"></ul>
                 </div>
 
+                <div id="dvScreenRadio" class="sPipNav">
+                    <p>Radio for help</p>
+                    <br>
+                    <div id="dvRadioContent">
+                        <div id="dvRadioLeft">
+                            <p>
+                                Need help finding the general area of a location? Call Preston
+                                for help and he'll mark it on your map.<br>
+                                <br>
+                                This can be done up to twice per round for a more accurate
+                                area, but reduces the maximum possible score for
+                                that round.
+                            </p>
+                            <button id="btnGetHint" class="pipButton" onclick="getHint()" disabled="true">Get hint (score limit 5000 -> 4000)</button>
+                        </div>
+                        <img id="imHint" src="assets/hint.png">
+                    </div>
+                </div>
+
                 <!-- Buttons separate from screens as they may want to be shown
                 on multiple screens -->
                 <div id="dvGameButtons">
@@ -202,6 +221,7 @@
             <button id="btnInv" class="btnNav" onclick="pipNavChange('inv')"></button>
             <button id="btnData" class="btnNav" onclick="pipNavChange('data')"></button>
             <button id="btnMap" class="btnNav" onclick="pipNavChange('map')"></button>
+            <button id="btnRadio" class="btnNav" onclick="pipNavChange('radio')"></button>
         </div>
     </div>
 

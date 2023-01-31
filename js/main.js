@@ -64,7 +64,7 @@ let allImageData;
 let randomisedImageOrder;
 let currentImageData;
 
-const UNITS_TO_METRES = 0.01428; //1 in game unit (pretty much) = 0.01428 metres https://www.creationkit.com/index.php?title=Unit
+const METRES_PER_GAME_UNIT = 0.01428; //1 in game unit (pretty much) = 0.01428 metres https://www.creationkit.com/index.php?title=Unit
 const MAX_SCORE = 5000;
 const PERFECT_DIST = 5;
 const SURVIVAL_STARTING_SCORE = 10000;
@@ -131,6 +131,9 @@ if (!localStorage.getItem("seed")) newStoredSeed();
 let tutorialActive = (localStorage.getItem("tutorialActive") === "true");
 let tutorialGameComplete = false; //need this as well as tutorialActive to say the game has been complete, then disable tutorial mode when a new game is started
 let tutorialImageIds = [637, 649, 94, 289, 416];
+
+let mapHintTier = 0;
+let scoreCap = 5000;
 
 
 ////////////////Resources & Initialisation////////////////
@@ -251,6 +254,7 @@ function ngStates()
     scoreDecayPerSecond = SURVIVAL_BASE_DECAY;
     currentGameState = gameStates.INITIALISED;
     showPromotionMessage = false;
+    mapHintTier = 0;
 
     if (tutorialActive && tutorialGameComplete)
     {
@@ -270,6 +274,9 @@ function ngUI()
     uipTimer.element.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
     uipMinScore.element.innerHTML = "Score required: " + gameParameters.minPassingScore;
     if (gameParameters.survival) uipCurrentScore.element.innerHTML = "Score: " + SURVIVAL_STARTING_SCORE;
+    
+    btnGetHint.disabled = true;
+    btnGetHint.innerHTML = "Get hint (score limit 5000 -> 4000)";
 }
 
 function newGame(repeat)
@@ -328,6 +335,21 @@ function newGame(repeat)
         statsAddGameCode(gc);
     }
 
+    if (tutorialActive)
+    {
+        addMessage("When the game starts, the pipboy will be hidden and you will " +
+        "be shown an image taken from somewhere in The Commonwealth. Click the icon " + 
+        "in the bottom left to toggle showing/hiding the pipboy, and place a marker " +
+        "on the map where you think the player was standing to take the image. " +
+        "You can click again to change your mind, or confirm your guess to end " +
+        "the round early. After 5 rounds, the game is over and you will be shown a " +
+        "summary of the locations and how far you were from them. You can also see " +
+        "the summary so far at any point by changing to the data screen in the top right.");
+        addMessage("If you feel completely lost, you can radio for help from Preston, " +
+        "I'm sure he'll be happy to mark your map with a hint.<br><br>")
+        addMessage("Click the start button when you're ready<br><br>");
+    }
+
 
     pipNavChange("data");
 }
@@ -338,6 +360,7 @@ function ready()
 {
     //actually start the damn game
     currentGameState = gameStates.GUESSING;
+    btnGetHint.disabled = false;
     pipSetVisible(false);
     pipNavChange("map");
     mapDefaultPos();
@@ -387,12 +410,14 @@ function confirmGuess()
         gameLocationSummary.push([guessPosMap, answerPosMap]);
 
         const guessDistance = Math.sqrt(Math.pow(currentImageData.pos[0] - guessPosWorld[0], 2) + Math.pow(currentImageData.pos[1] - guessPosWorld[1], 2));
-        distanceMetres = guessDistance * UNITS_TO_METRES;
+        distanceMetres = guessDistance * METRES_PER_GAME_UNIT;
 
         //different modes have different scoring systems, get a score from the appropriate one
         score = gameParameters.getScore(distanceMetres);
 
-        if (distanceMetres < 1)
+        if (score > scoreCap) score = scoreCap;
+
+        if (distanceMetres < 1 && mapHintTier == 0)
         {
             //for the real gamers
             score += 1;
@@ -421,6 +446,7 @@ function confirmGuess()
     updateCurrentScoreDisplay(score, gamer);
 
     uibtnConfirmGuess.element.disabled = true;
+    btnGetHint.disabled = true;
     guessPlaced = false;
     currentGameState = gameStates.WAITING_NEXT_ROUND;
     pipNavChange("map");
@@ -465,6 +491,9 @@ function nextRound()
     mapDefaultPos();
 
     currentGameState = gameStates.GUESSING;
+    mapHintTier = 0;
+    btnGetHint.disabled = false;
+    btnGetHint.innerHTML = "Get hint (score limit 5000 -> 4000)";
     pipSetVisible(false);
     pipNavChange("map");
 }
@@ -550,6 +579,43 @@ function enableSummary()
 
     currentGameState = gameStates.SHOWING_SUMMARY;
     pipNavChange("map");
+}
+
+function getHint()
+{
+    mapHintTier++;
+    let size;
+    let buttonText;
+    switch (mapHintTier)
+    {
+        case 1:
+            size = hintAreaSizes.MEDIUM;
+            scoreCap = 4000;
+            buttonText = "Get hint (score limit 4000 -> 3000)";
+            break;
+        
+        case 2:
+            size = hintAreaSizes.SMALL;
+            scoreCap = 3000;
+            buttonText = "No more hints available";
+            break;
+
+        default:
+            size = -1;
+    }
+
+    btnGetHint.innerHTML = buttonText;
+
+    if (size != -1)
+    {
+        pipNavChange("map");
+        mapAddHintArea(size);
+    }
+    
+    if (mapHintTier >= 2)
+    {
+        btnGetHint.disabled = true;
+    }
 }
 
 

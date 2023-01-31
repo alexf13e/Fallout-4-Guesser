@@ -36,11 +36,15 @@ const dvInfoTutorial = document.getElementById("dvInfoTutorial");
 
 const roundResultsList = document.getElementById("roundResults");
 
+const btnGetHint = document.getElementById("btnGetHint");
+btnGetHint.disabled = true;
+
 //These elements may be shown on multiple screens, and with additional conditions
 const uiScreenStats = new PipUIElement(document.getElementById("dvScreenStats"), "block", ["stats"]);
 const uiScreenInv = new PipUIElement(document.getElementById("dvScreenInv"), "block", ["inv"]);
 const uiScreenData = new PipUIElement(document.getElementById("dvScreenData"), "block", ["data"]);
 const uiScreenMap = new PipUIElement(document.getElementById("dvScreenMap"), "block", ["map"]);
+const uiScreenRadio = new PipUIElement(document.getElementById("dvScreenRadio"), "block", ["radio"]);
 
 const uidvGameInfo = new PipUIElement(document.getElementById("dvGameInfo"), "grid", ["data", "map"]);
 const uidvGameButtons = new PipUIElement(document.getElementById("dvGameButtons"), "grid", ["data", "map"]);
@@ -68,6 +72,7 @@ autoVisiblePipElements.push(uiScreenStats);
 autoVisiblePipElements.push(uiScreenInv);
 autoVisiblePipElements.push(uiScreenData);
 autoVisiblePipElements.push(uiScreenMap);
+autoVisiblePipElements.push(uiScreenRadio);
 
 autoVisiblePipElements.push(uidvGameInfo);
 autoVisiblePipElements.push(uidvGameButtons);

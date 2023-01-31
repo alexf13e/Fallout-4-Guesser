@@ -366,7 +366,7 @@ function statsUpdateRound(roundScore, dist, roundTime)
     }
 
     playerStats.rating.legendary = playerStats.general.specialScores.value >= 30;
-    playerStats.rating.xp += statsCalculateXp(score);
+    playerStats.rating.xp += statsCalculateXp(roundScore);
     
     let prevLevel = playerStats.rating.level;
     playerStats.rating.level = statsCalculateLevel(playerStats.rating.xp);

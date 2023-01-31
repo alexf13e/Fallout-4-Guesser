@@ -30,6 +30,7 @@ const imNavStats = new Image();
 const imNavInv = new Image();
 const imNavMap = new Image();
 const imNavData = new Image();
+const imNavRadio = new Image();
 const imRad = new Image();
 const imDif = new Image();
 let imNavCurrent;
@@ -40,6 +41,7 @@ imNavStats.onload = () => checkLoadedImages();
 imNavInv.onload = () => checkLoadedImages();
 imNavData.onload = () => checkLoadedImages();
 imNavMap.onload = () => checkLoadedImages();
+imNavRadio.onload = () => checkLoadedImages();
 imRad.onload = () => checkLoadedImages();
 imDif.onload = () => checkLoadedImages();
 
@@ -48,6 +50,7 @@ imNavStats.load("./assets/pip/navStat.png")
 imNavInv.load("./assets/pip/navInv.png");
 imNavData.load("./assets/pip/navData.png");
 imNavMap.load("./assets/pip/navMap.png");
+imNavRadio.load("./assets/pip/navRadio.png");
 imRad.load("./assets/pip/rad.png");
 imDif.load("./assets/pip/dif.png");
 
@@ -82,7 +85,7 @@ function checkLoadedImages()
 {
     //hide the pip boy until all elements/images have loaded
     loadedCount++;
-    if (loadedCount >= 7)
+    if (loadedCount >= 8)
     {
         window.clearInterval(pipboyImageProgressInterval);
         pLoadingProgress.style.display = "none";
@@ -95,8 +98,9 @@ function checkLoadedImages()
 
 function updatePipboyLoadingProgress()
 {
-    let progress = (imToggle.completedPercentage + imPipboy.completedPercentage + imNavInv.completedPercentage
-        + imNavData.completedPercentage + imNavMap.completedPercentage + imRad.completedPercentage + imDif.completedPercentage) / 7;
+    let progress = (imToggle.completedPercentage + imPipboy.completedPercentage +
+        imNavInv.completedPercentage + imNavData.completedPercentage + imNavMap.completedPercentage +
+        imNavRadio.completedPercentage + imRad.completedPercentage + imDif.completedPercentage) / 8;
     pLoadingProgress.innerHTML = "Loading Pipboy: " + parseInt(progress) + "%";
 }
 
@@ -155,6 +159,11 @@ function pipNavChange(screen)
             imNavCurrent = imNavData;
             //scroll to bottom of game data to show most relevant info
             roundResultsList.scrollTop = roundResultsList.scrollHeight;
+            pipDraw();
+            break;
+        
+        case "radio":
+            imNavCurrent = imNavRadio;
             pipDraw();
             break;
     }
