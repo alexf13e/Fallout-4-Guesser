@@ -255,6 +255,7 @@ function ngStates()
     currentGameState = gameStates.INITIALISED;
     showPromotionMessage = false;
     mapHintTier = 0;
+    scoreCap = MAX_SCORE
 
     if (tutorialActive && tutorialGameComplete)
     {
@@ -492,6 +493,7 @@ function nextRound()
 
     currentGameState = gameStates.GUESSING;
     mapHintTier = 0;
+    scoreCap = MAX_SCORE
     btnGetHint.disabled = false;
     btnGetHint.innerHTML = "Get hint (score limit 5000 -> 4000)";
     pipSetVisible(false);
