@@ -171,7 +171,7 @@ function updateImage()
     }
     else
     {
-        if (!(gameParameters.type == gameModeTypes.CUSTOM || gameParameters.type == gameModeTypes.SURVIVAL))
+        if (!(gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.isCustom))
         {
             localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) + 1);
             maxOffset = Math.max(parseInt(localStorage.getItem("roundOffset")), maxOffset);
@@ -328,7 +328,7 @@ function newGame(repeat)
         mapDefaultPos();
     }
 
-    if (gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.type == gameModeTypes.CUSTOM)
+    if (gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.isCustom)
     {
         let gc = createGameCode();
         addMessage("Game code for sharing: " + gc + "<br>", false);

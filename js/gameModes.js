@@ -16,6 +16,7 @@ const gpNormal = {
     seed: 0,
     roundOffset: 0,
     showRemainingRounds: true,
+    isCustom: false,
 
     manageSeed(repeat)
     {
@@ -66,6 +67,7 @@ const gpEndless = {
     seed: 0,
     roundOffset: 0,
     showRemainingRounds: false,
+    isCustom: false,
 
     manageSeed(repeat)
     {
@@ -112,6 +114,7 @@ const gpSurvival = {
     seed: 0,
     roundOffset: 0,
     showRemainingRounds: false,
+    isCustom: false,
 
     updateRoundMax(num)
     {
@@ -173,6 +176,7 @@ let gpCustom = {
     seed: 0,
     roundOffset: 0,
     showRemainingRounds: true,
+    isCustom: true,
 
     manageSeed(repeat)
     {
