@@ -155,6 +155,12 @@ select > option
     gap: 0 5%;
 }
 
+#hMainTitle
+{
+    font-size: xxx-large;
+    text-align: center;
+}
+
 .menuButton
 {
     position: relative;

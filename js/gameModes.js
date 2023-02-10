@@ -1,11 +1,18 @@
+const gameModeTypes = Object.freeze({
+    NORMAL: 0,
+    ENDLESS: 1,
+    SURVIVAL: 2,
+    CUSTOM_NORMAL: 3,
+    CUSTOM_SURVIVAL: 4
+});
+
 const gpNormal = {
+    type: gameModeTypes.NORMAL,
     rounds: 5,
     timeLimit: 90,
     minPassingScore: 0,
     minDifficulty: 0,
     maxDifficulty: 2,
-    survival: false,
-    custom: false,
     seed: 0,
     roundOffset: 0,
     showRemainingRounds: true,
@@ -36,7 +43,226 @@ const gpNormal = {
 
     getScore(dist)
     {
-        /*Score on a quadratic curve which seemed about reasonable for how difficult I want it to be
+        return getScoreNormal(dist);
+    },
+
+    checkGameOvers()
+    {
+        if (roundsRemaining <= 0)
+        {
+            //completed the number of rounds the game was set to
+            gameOver(gameOverTypes.COMPLETED_ROUNDS_NORMAL);
+        }
+    }
+};
+
+const gpEndless = {
+    type: gameModeTypes.ENDLESS,
+    rounds: 0,
+    timeLimit: 0,
+    minPassingScore: 0,
+    minDifficulty: 0,
+    maxDifficulty: 2,
+    seed: 0,
+    roundOffset: 0,
+    showRemainingRounds: false,
+
+    manageSeed(repeat)
+    {
+        //using seed in localstorage
+        if (repeat)
+        {
+            //clicked "repeat game" at end of previous one, so want to have the same images as before
+            localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) - gameParameters.rounds);
+            gameParameters.roundOffset = parseInt(localStorage.getItem("roundOffset"));
+        }
+        else
+        {
+            //not repeating a game, want new images
+            localStorage.setItem("roundOffset", maxOffset);
+            gameParameters.roundOffset = maxOffset;
+        }
+
+        gameParameters.seed = parseInt(localStorage.getItem("seed"));
+    },
+
+    modeConfirmGuess()
+    {
+        //nothing specific to check in endless
+    },
+
+    getScore(dist)
+    {   
+        return getScoreNormal(dist);
+    },
+
+    checkGameOvers()
+    {
+        //endless mode can't game over
+    }
+};
+
+const gpSurvival = {
+    type: gameModeTypes.SURVIVAL,
+    rounds: -1,
+    timeLimit: 0,
+    minPassingScore: 0,
+    minDifficulty: 0,
+    maxDifficulty: 2,
+    seed: 0,
+    roundOffset: 0,
+    showRemainingRounds: false,
+
+    updateRoundMax(num)
+    {
+        this.rounds = num;
+    },
+
+    manageSeed(repeat)
+    {
+        if (!repeat)
+        {
+            //using specific seed, not from localstorage
+            if (!firstGame)
+            {
+                //new game not wanting repeat
+                gameParameters.seed = generateSeed();
+            }
+            else
+            {
+                //first game being played, seed was not set by options in initialisation, so a random one is desired
+                if (gameParameters.seed == "" || gameParameters.seed == 0) gameParameters.seed = generateSeed();
+            }
+        }
+    },
+
+    modeConfirmGuess(score, gamer)
+    {
+        confirmGuessSurvival(score, gamer);
+    },
+
+    getScore(dist)
+    {
+        return getScoreSurvival(dist);
+    },
+
+    checkGameOvers()
+    {
+        if (survivalRemainingScore <= 0)
+        {
+            //score decayed to 0
+            gameOver(gameOverTypes.FAILED_SCOREDRAIN);
+            return;
+        }
+
+        if (roundsRemaining <= 0)
+        {
+            //completed all survival rounds
+            gameOver(gameOverTypes.COMPLETED_ROUNDS_SURVIVAL);
+        }
+    }
+};
+
+let gpCustom = {
+    type: gameModeTypes.NORMAL,
+    rounds: 5,
+    timeLimit: 60,
+    minPassingScore: 0,
+    minDifficulty: 0,
+    maxDifficulty: 2,
+    seed: 0,
+    roundOffset: 0,
+    showRemainingRounds: true,
+
+    manageSeed(repeat)
+    {
+        if (!repeat)
+        {
+            //using specific seed, not from localstorage
+            if (!firstGame)
+            {
+                //new game not wanting repeat
+                gameParameters.seed = generateSeed();
+            }
+            else
+            {
+                //first game being played, seed was not set by options in initialisation, so a random one is desired
+                if (gameParameters.seed == "" || gameParameters.seed == 0) gameParameters.seed = generateSeed();
+            }
+        }
+    },
+
+    modeConfirmGuess(score, gamer)
+    {
+        if (this.type == gameModeTypes.SURVIVAL)
+        {
+            confirmGuessSurvival(score, gamer);
+        }
+    },
+
+    getScore(dist)
+    {
+        switch (this.type)
+        {
+            case gameModeTypes.NORMAL:
+                return getScoreNormal(dist);
+            
+            case gameModeTypes.SURVIVAL:
+                return getScoreSurvival(dist);
+
+            default:
+                return 0;
+        }
+    },
+
+    checkGameOvers(score)
+    {
+        if (this.type == gameModeTypes.NORMAL)
+        {
+            if (roundsRemaining <= 0)
+            {
+                //completed the number of rounds the game was set to
+                gameOver(gameOverTypes.COMPLETED_ROUNDS_NORMAL);
+            }
+        }
+
+        if (this.type == gameModeTypes.SURVIVAL)
+        {
+            if (survivalRemainingScore <= 0)
+            {
+                //score decayed to 0
+                gameOver(gameOverTypes.FAILED_SCOREDRAIN);
+                return;
+            }
+    
+            if (roundsRemaining <= 0)
+            {
+                if (this.rounds == gpSurvival.rounds)
+                {
+                    //completed all survival rounds
+                    gameOver(gameOverTypes.COMPLETED_ROUNDS_SURVIVAL);
+                }
+                else
+                {
+                    //completed the number of rounds the game was set to
+                    gameOver(gameOverTypes.COMPLETED_ROUNDS_NORMAL);
+                }
+                
+            }
+        }
+
+        if (score < gameParameters.minPassingScore)
+        {
+            //didn't get enough points to pass the round
+            gameOver(gameOverTypes.FAILED_MINSCORE);
+            return;
+        }
+    }
+};
+
+function getScoreNormal(dist)
+{
+        /*Score on a curve which seemed about reasonable for how difficult I want it to be
         Curve is tuned to have max score at 5 metres, and 0 points at 500 metres
         https://www.desmos.com/calculator/nvdbx3r4qx (b is scoreStrictness)
         Vague explanation about how its tuned:
@@ -68,219 +294,32 @@ const gpNormal = {
         const a = -(MAX_SCORE + 495 * SCORE_STRICTNESS) / 249975;
         const c = MAX_SCORE - PERFECT_DIST * PERFECT_DIST * a - PERFECT_DIST * SCORE_STRICTNESS;
 
-        score = a * dist * dist + SCORE_STRICTNESS * dist + c;
+        let score = a * dist * dist + SCORE_STRICTNESS * dist + c;
         score = Math.floor(Math.max(Math.min(MAX_SCORE, score), 0)); //constrain score between 0 and maxscore
 
         return score;
-    },
+}
 
-    checkGameOvers()
-    {
-        if (roundsRemaining <= 0)
-        {
-            //completed the number of rounds the game was set to
-            gameOver(gameOverTypes.COMPLETED_ROUNDS_NORMAL);
-        }
-    }
-};
+function getScoreSurvival(dist)
+{
+    //stricter than normal scoring. score drops to 0 at 100 metres, and decays more steeply
+    //see normal scoring function for details
+    const SCORE_STRICTNESS = -10;
+    const a = -(MAX_SCORE + 95 * SCORE_STRICTNESS) / 9975;
+    c = MAX_SCORE - PERFECT_DIST * PERFECT_DIST * a - PERFECT_DIST * SCORE_STRICTNESS;
+    
+    let score = a * dist * dist + SCORE_STRICTNESS * dist + c;
+    score = Math.floor(Math.max(Math.min(MAX_SCORE, score), 0)); //constrain score between 0 and maxscore
 
-const gpEndless = {
-    rounds: 0,
-    timeLimit: 0,
-    minPassingScore: 0,
-    minDifficulty: 0,
-    maxDifficulty: 2,
-    survival: false,
-    custom: false,
-    seed: 0,
-    roundOffset: 0,
-    showRemainingRounds: false,
+    return score;
+}
 
-    manageSeed(repeat)
-    {
-        //using seed in localstorage
-        if (repeat)
-        {
-            //clicked "repeat game" at end of previous one, so want to have the same images as before
-            localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) - gameParameters.rounds);
-            gameParameters.roundOffset = parseInt(localStorage.getItem("roundOffset"));
-        }
-        else
-        {
-            //not repeating a game, want new images
-            localStorage.setItem("roundOffset", maxOffset);
-            gameParameters.roundOffset = maxOffset;
-        }
-
-        gameParameters.seed = parseInt(localStorage.getItem("seed"));
-    },
-
-    modeConfirmGuess()
-    {
-        //nothing specific to check in endless
-    },
-
-    getScore(dist)
-    {   
-        const SCORE_STRICTNESS = -3.9;
-        const a = -(MAX_SCORE + 495 * SCORE_STRICTNESS) / 249975;
-        const c = MAX_SCORE - PERFECT_DIST * PERFECT_DIST * a - PERFECT_DIST * SCORE_STRICTNESS;
-
-        score = a * dist * dist + SCORE_STRICTNESS * dist + c;
-        score = Math.floor(Math.max(Math.min(MAX_SCORE, score), 0)); //constrain score between 0 and maxscore
-
-        return score;
-    },
-
-    checkGameOvers()
-    {
-        //endless mode can't game over
-    }
-};
-
-const gpSurvival = {
-    rounds: -1,
-    timeLimit: 0,
-    minPassingScore: 0,
-    minDifficulty: 0,
-    maxDifficulty: 2,
-    survival: true,
-    custom: false,
-    seed: 0,
-    roundOffset: 0,
-    showRemainingRounds: false,
-
-    updateRoundMax(num)
-    {
-        this.rounds = num;
-    },
-
-    manageSeed(repeat)
-    {
-        if (!repeat)
-        {
-            //using specific seed, not from localstorage
-            if (!firstGame)
-            {
-                //new game not wanting repeat
-                gameParameters.seed = generateSeed();
-            }
-            else
-            {
-                //first game being played, seed was not set by options in initialisation, so a random one is desired
-                if (gameParameters.seed == "" || gameParameters.seed == 0) gameParameters.seed = generateSeed();
-            }
-        }
-    },
-
-    modeConfirmGuess(score, gamer)
-    {
-        uipCurrentScore.element.innerHTML = "Score: " + survivalRemainingScore + " + " + score;
-        survivalRemainingScore += score;
-        if (survivalRemainingScore > survivalPeakScore) survivalPeakScore = survivalRemainingScore;
-        if (gamer) scoreDecayPerSecond = 100; //reset score decay rate as reward for good guess
-        else scoreDecayPerSecond = Math.min(scoreDecayPerSecond + 50, 750);
-        roundsRemaining--;
-    },
-
-    getScore(dist)
-    {
-        //stricter than normal scoring. score drops to 0 at 100 metres, and decays more steeply
-        //see normal scoring function for details
-        const scoreStrictness = -10;
-        const a = -(MAX_SCORE + 95 * scoreStrictness) / 9975;
-        c = MAX_SCORE - PERFECT_DIST * PERFECT_DIST * a - PERFECT_DIST * scoreStrictness;
-        
-        score = a * dist * dist + scoreStrictness * dist + c;
-        score = Math.floor(Math.max(Math.min(MAX_SCORE, score), 0)); //constrain score between 0 and maxscore
-
-        return score;
-    },
-
-    checkGameOvers()
-    {
-        if (survivalRemainingScore <= 0)
-        {
-            //score decayed to 0
-            gameOver(gameOverTypes.FAILED_SCOREDRAIN);
-            return;
-        }
-
-        if (roundsRemaining <= 0)
-        {
-            //completed the number of rounds the game was set to
-            gameOver(gameOverTypes.COMPLETED_ROUNDS_SURVIVAL);
-        }
-    }
-};
-
-let gpCustom = {
-    rounds: 5,
-    timeLimit: 60,
-    minPassingScore: 0,
-    minDifficulty: 0,
-    maxDifficulty: 2,
-    survival: false,
-    custom: false,
-    seed: 0,
-    roundOffset: 0,
-    showRemainingRounds: true,
-
-    manageSeed(repeat)
-    {
-        if (!repeat)
-        {
-            //using specific seed, not from localstorage
-            if (!firstGame)
-            {
-                //new game not wanting repeat
-                gameParameters.seed = generateSeed();
-            }
-            else
-            {
-                //first game being played, seed was not set by options in initialisation, so a random one is desired
-                if (gameParameters.seed == "" || gameParameters.seed == 0) gameParameters.seed = generateSeed();
-            }
-        }
-    },
-
-    modeConfirmGuess()
-    {
-        roundsRemaining--;
-    },
-
-    getScore(dist)
-    {
-        const SCORE_STRICTNESS = -3.9;
-        const a = -(MAX_SCORE + 495 * SCORE_STRICTNESS) / 249975;
-        const c = MAX_SCORE - PERFECT_DIST * PERFECT_DIST * a - PERFECT_DIST * SCORE_STRICTNESS;
-
-        score = a * dist * dist + SCORE_STRICTNESS * dist + c;
-        score = Math.floor(Math.max(Math.min(MAX_SCORE, score), 0)); //constrain score between 0 and maxscore
-
-        return score;
-    },
-
-    checkGameOvers(score)
-    {
-        if (survivalRemainingScore <= 0)
-        {
-            //score decayed to 0
-            gameOver(gameOverTypes.FAILED_SCOREDRAIN);
-            return;
-        }
-
-        if (score < gameParameters.minPassingScore)
-        {
-            //didn't get enough points to pass the round
-            gameOver(gameOverTypes.FAILED_MINSCORE);
-            return;
-        }
-
-        if (roundsRemaining <= 0)
-        {
-            //completed the number of rounds the game was set to
-            gameOver(gameOverTypes.COMPLETED_ROUNDS_NORMAL);
-        }
-    }
-};
+function confirmGuessSurvival(score, gamer)
+{
+    uipCurrentScore.element.innerHTML = "Score: " + survivalRemainingScore + " + " + score;
+    survivalRemainingScore += score;
+    if (survivalRemainingScore > survivalPeakScore) survivalPeakScore = survivalRemainingScore;
+    if (gamer) scoreDecayPerSecond = 100; //reset score decay rate as reward for good guess
+    else scoreDecayPerSecond = Math.min(scoreDecayPerSecond + 50, 750);
+    roundsRemaining--;
+}

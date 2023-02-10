@@ -51,8 +51,25 @@ const uidvGameButtons = new PipUIElement(document.getElementById("dvGameButtons"
 
 const uipRoundCount = new PipUIElement(document.getElementById("pRoundCount"), "block", [], [gameStates.INITIALISED, gameStates.GUESSING]);
 const uipTimer = new PipUIElement(document.getElementById("pTimer"), "block", [], [gameStates.INITIALISED, gameStates.GUESSING], () => gameParameters.timeLimit != 0);
-const uipMinScore = new PipUIElement(document.getElementById("pMinScore"), "block", [], [], () => gameParameters.minPassingScore != 0 && ((currentGameState == gameStates.INITIALISED || currentGameState == gameStates.GUESSING) || (gameOverStatus == gameOverTypes.FAILED_MINSCORE && currentGameState == gameStates.OVER))); //screw this element, ruined my whole nice state system for the ui
-const uipCurrentScore = new PipUIElement(document.getElementById("pCurrentScore"), "block", [], [], () => (gameParameters.survival && (currentGameState == gameStates.INITIALISED || currentGameState == gameStates.GUESSING || currentGameState == gameStates.WAITING_NEXT_ROUND || currentGameState == gameStates.OVER)) || currentGameState == gameStates.WAITING_NEXT_ROUND || currentGameState == gameStates.OVER); //screw this one even more
+const uipMinScore = new PipUIElement(document.getElementById("pMinScore"), "block", [], [], () =>
+    /*show minscore if minimum score is set above 0 and the game is either ready
+    to start or a guess has yet to be confirmed, or has ended because of not
+    getting above the score requirement*/
+    gameParameters.minPassingScore != 0 && 
+    ((currentGameState == gameStates.INITIALISED || currentGameState == gameStates.GUESSING) ||
+     (gameOverStatus == gameOverTypes.FAILED_MINSCORE && currentGameState == gameStates.OVER))
+);
+
+const uipCurrentScore = new PipUIElement(document.getElementById("pCurrentScore"), "block", [], [], () =>
+    /*show current score if either:
+        in survival, and game is not uninitialised or showing summary
+    or:
+        in any mode, and waiting for next round or game is over
+    */
+    ((gameParameters.type == gameModeTypes.SURVIVAL) &&
+    !(currentGameState == gameStates.NOT_INITIALISED || currentGameState == gameStates.SHOWING_SUMMARY)) ||
+     currentGameState == gameStates.WAITING_NEXT_ROUND || currentGameState == gameStates.OVER
+);
 
 const uibtnReady = new PipUIElement(document.getElementById("btnReady"), "block", [], [gameStates.INITIALISED]);
 const uibtnConfirmGuess = new PipUIElement(document.getElementById("btnConfirmGuess"), "block", [], [gameStates.GUESSING]);

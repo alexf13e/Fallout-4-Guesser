@@ -59,6 +59,7 @@
 
     <div id="dvInfoBorder" class="menuItemBorder"></div>
     <div id="dvInfo" class="menuItem">
+        <h1 id="hMainTitle">Fallout 4 Guesser</h1>
         <h1>About</h1>
         <p>
             Figure out where an image was taken in the world of Fallout 4 and get
@@ -67,15 +68,16 @@
             modes, and a mode where you can set various game options and get a code
             for others to play with the same set of rules and locations.
             <br><br>
-            Idea inspired by (and definitely not stolen from) these games, mainly gtaguessr for showing me the concept
+
+            If you are someone with a following and you show this game off, I'd be interested
+            to see you play it, so please feel free to share whatever you make with me
+            (details in top right in game).<br><br>
+
+            Idea taken from these games, mainly gtaguessr for showing me the concept
             is actually fun and worth pursuing for other games:<br>
             <a href="https://www.geoguessr.com" target="_blank" rel="noreferrer noopener">https://www.geoguessr.com</a><br>
             <a href="https://gtaguessr.com" target="_blank" rel="noreferrer noopener">https://gtaguessr.com</a>
-            <br><br>
-            If you are someone with a following and you show this game off, I'd be interested
-            to see you play it, so please feel free to share whatever you make with me
-            (details in top right in game).<br>
-        
+            <br>
         </p>
         <br>
         <h1>Controls</h1>
@@ -115,7 +117,7 @@
         <h1>Credits</h1>
         <ul>
             <li>Bethesda, for making Fallout 4. The waypoint markers and Pip-Boy were
-                traced/had images taken directly from in-game, and the in-game,
+                traced/had images taken directly from in-game, and the in-game map,
                 page background and Preston icon were taken from the game too.</li>
             <li><a href="https://leafletjs.com/" target="_blank" rel="noreferrer noopener">Leaflet.js</a> for the really
                 good map library used which is far nicer than the way I was doing
@@ -126,16 +128,32 @@
                 for telling me about the <a href="https://github.com/fo76utils/fo76utils" target="_blank" rel="noreferrer noopener">fo76utils tool</a>
                 for getting a good quality satellite map image, and helping me get
                 started using it</li>
-            <li>Me, for taking the in-game images, editing images game assets
+            <li>▪alex#3059 (u/gamblor28 (me)), for taking the in-game images, editing images game assets
                 (Pip-Boy, waypoint markers), stealing ideas from other games,
                 and writing most of the code (though I probably don't want to
-                take credit for that). The rest of the code was probably copied
-                from stackoverflow or something I can't remember
+                take credit for that). Stolen code at least has a comment to where it came from
             </li>
         </ul>
         <br>
 
         <h1>Updates</h1>
+        1.6.3 - 10th February 2023
+        <ul>
+            <li>
+                Added xp bar to game summary and stats screen
+            </li>
+            <li>
+                Fixed issues with custom modes not behaving like their non-custom
+                equivalents
+            </li>
+            <li>
+                Changed how gamemodes affect some stats
+            </li>
+            <li>
+                Lots of code refactoring to make it 3% less nightmarish
+            </li>
+        </ul>
+
         1.6.2 - 31st January 2023
         <ul>
             <li>
@@ -460,6 +478,11 @@
             <li>Added option to show map markers</li>
             <li>Fixed a bug that slowly ate your GPU</li>
         </ul>
+        <br>
+        And since you must really like the game to read this far, you can find all the code
+        and assets here (good for a laugh)
+        <a href="https://github.com/alexf13e/Fallout-4-Guesser" target="_blank" rel="noreferrer noopener">https://github.com/alexf13e/Fallout-4-Guesser</a>
+
     </div>
 
     <div id="dvAnalytics">

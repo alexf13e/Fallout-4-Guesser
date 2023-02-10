@@ -171,7 +171,7 @@ function updateImage()
     }
     else
     {
-        if (!(gameParameters.custom || gameParameters.survival))
+        if (!(gameParameters.type == gameModeTypes.CUSTOM || gameParameters.type == gameModeTypes.SURVIVAL))
         {
             localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) + 1);
             maxOffset = Math.max(parseInt(localStorage.getItem("roundOffset")), maxOffset);
@@ -218,13 +218,12 @@ function initialiseGame(mode)
             const minps = paramMinScore.value;
             const seed = paramSeed.value;
 
-            gpCustom.survival = paramMode.value == "1";
+            gpCustom.type = (paramMode.value == "1" ? gameModeTypes.SURVIVAL : gameModeTypes.NORMAL);
             gpCustom.rounds = (rounds == "" || parseInt(rounds) == 0) ? allImageData.length : parseInt(rounds);
             gpCustom.timeLimit = (tl == "" || parseInt(tl) == 0) ? 0 : parseInt(tl);
             gpCustom.minPassingScore = (minps == "" || parseInt(minps) == 0) ? 0 : parseInt(minps);
             gpCustom.minDifficulty = parseInt(paramMinDifficulty.value);
             gpCustom.maxDifficulty = parseInt(paramMaxDifficulty.value);
-            gpCustom.custom = true;
             gpCustom.roundOffset = 0;
             gpCustom.showRemainingRounds = !(rounds == "" || parseInt(rounds) == 0);
             gpCustom.seed = seed;
@@ -274,7 +273,7 @@ function ngUI()
     roundResultsList.innerHTML = "";
     uipTimer.element.innerHTML = "Time: " + formatTimeString(gameParameters.timeLimit);
     uipMinScore.element.innerHTML = "Score required: " + gameParameters.minPassingScore;
-    if (gameParameters.survival) uipCurrentScore.element.innerHTML = "Score: " + SURVIVAL_STARTING_SCORE;
+    if (gameParameters.type == gameModeTypes.SURVIVAL) uipCurrentScore.element.innerHTML = "Score: " + SURVIVAL_STARTING_SCORE;
     
     btnGetHint.disabled = true;
     btnGetHint.innerHTML = "Get hint (score limit 5000 -> 4000)";
@@ -329,7 +328,7 @@ function newGame(repeat)
         mapDefaultPos();
     }
 
-    if (gameParameters.custom || gameParameters.survival)
+    if (gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.type == gameModeTypes.CUSTOM)
     {
         let gc = createGameCode();
         addMessage("Game code for sharing: " + gc + "<br>", false);
@@ -437,7 +436,7 @@ function confirmGuess()
     }
 
 
-    const roundText = roundNumber + ": " + score + " points (" + distMessage + ")";
+    const roundText = roundNumber + ": " + score + " points (" + distMessage + ") +" + Math.floor(statsCalculateXp(score, distanceMetres)) + "xp";
     addMessage(roundText, gamer);
 
     totalScore += score;
@@ -555,23 +554,18 @@ function enableSummary()
     let scoreMessage = totalScore;
     if (gameParameters.showRemainingRounds) scoreMessage += "/" + MAX_SCORE * gameParameters.rounds;
     addMessage("Total Score: " + scoreMessage);
-    if (gameParameters.survival) addMessage("Peak score: " + survivalPeakScore);
+    if (gameParameters.type == gameModeTypes.SURVIVAL) addMessage("Peak score: " + survivalPeakScore);
     addMessage("Total Time: " + formatTimeString(totalTime), false);
     addMessage("Total Distance Away: " + formatDistance(totalDistance), false);
     
     addMessage("<br>");
     if (showPromotionMessage)
     {
-        addMessage("You have been promoted to level " + playerStats.rating.level +
+        addMessage("You have been promoted to " + (playerStats.rating.legendary ? "★ " : "") + "level " + playerStats.rating.level +
             " " + playerStats.rating.title);
     }
 
-    let xpIntoCurrentLevel = Math.ceil(playerStats.rating.xp - statsCalculateXpForLevel(playerStats.rating.level));
-    let xpDifferenceForLevel = Math.ceil(statsCalculateXpForLevel(playerStats.rating.level + 1) - statsCalculateXpForLevel(playerStats.rating.level));
-    let xpMessage = xpIntoCurrentLevel + "/" + xpDifferenceForLevel + "xp to level " + (playerStats.rating.level + 1);
-    addMessage(xpMessage);
-        
-    uibtnNewGame.element.textContent = "New Game" + (gameParameters.custom ? " (random seed)" : "");
+    roundResultsList.appendChild(createXPBar());
 
     hideGuessImage();
 
@@ -638,6 +632,29 @@ function addMessage(message, special)
     roundResultsList.scrollTop = roundResultsList.scrollHeight;
 }
 
+function createXPBar()
+{
+    let xpIntoCurrentLevel = Math.ceil(playerStats.rating.xp - statsCalculateXpForLevel(playerStats.rating.level));
+    let xpDifferenceForLevel = Math.ceil(statsCalculateXpForLevel(playerStats.rating.level + 1) - statsCalculateXpForLevel(playerStats.rating.level));
+    let xpMessage = "Level " + playerStats.rating.level + " - " + xpIntoCurrentLevel + "/" + xpDifferenceForLevel + "xp";
+
+    const dvXPBarOuter = document.createElement("div");
+    const dvXPBarInner = document.createElement("div");
+    const pXPText = document.createElement("p");
+
+    dvXPBarOuter.classList.add("xpBarOuter");
+    dvXPBarInner.classList.add("xpBarInner");
+    pXPText.classList.add("xpText");
+
+    dvXPBarInner.style.width = (xpIntoCurrentLevel / xpDifferenceForLevel) * 100 + "%";
+    pXPText.textContent = xpMessage;
+
+    dvXPBarOuter.appendChild(dvXPBarInner);
+    dvXPBarOuter.appendChild(pXPText);
+
+    return dvXPBarOuter;
+}
+
 function generateSeed()
 {
     return Math.floor(Math.random() * 2147483648);
@@ -665,7 +682,7 @@ function createRandomImageOrder()
     }
 
     //is this a normal game, and are there more rounds than remaining locations in this batch
-    if (!(gameParameters.custom || gameParameters.survival) && gameParameters.showRemainingRounds && gameParameters.rounds > availableImNums.length - gameParameters.roundOffset)
+    if (gameParameters.type == gameModeTypes.NORMAL && gameParameters.rounds > availableImNums.length - gameParameters.roundOffset)
     {
         /*dont want this to get too complicated. if there arent enough unseen
         locations left to fill this game, just get a new seed and start at the
@@ -737,7 +754,6 @@ function updateRoundTimer()
 
     roundTimerUpdateTimeout = window.setTimeout(updateRoundTimer, 100);
 
-    //yes events i know but this is easier for now in case theres both a timer and score decay
     if (remainingTime < 15 && !buttonFlashing && !pipVisible)
     {
         flashButtonOn();
@@ -746,7 +762,7 @@ function updateRoundTimer()
 
 function beginScoreDecay()
 {
-    if (currentGameState != gameStates.GUESSING || !gameParameters.survival) return;
+    if (currentGameState != gameStates.GUESSING || gameParameters.type != gameModeTypes.SURVIVAL) return;
 
     window.clearTimeout(scoreDecayUpdateTimeout);
     updateScoreDecay();   
@@ -789,16 +805,15 @@ function clearTimeouts()
 
 function createGameCode()
 {
-    /*slightly more sophisticated way (which only saves like 30% at best)
-    cant be bothered to make something to convert from base 10 to a higher base
-    for the entire code treated as one number, since its too large to use built
-    in methods*/
-
     //if no gameparameters have been set, cant return a code
     if (Object.keys(gameParameters).length == 0) return null;
 
-    let gcSurvival = (gameParameters.survival ? "1" : "0");
+    let gcSurvival;
+    if (gameParameters.type == gameModeTypes.SURVIVAL) gcSurvival = "1";
+    else gcSurvival = "0";
+
     let gcRounds = gameParameters.rounds;
+    if (gcRounds == gpSurvival.rounds) gcRounds = 0;
     let gcTimeLimit = gameParameters.timeLimit;
     let gcMinScore = gameParameters.minPassingScore;
     let gcMinDif = gameParameters.minDifficulty;
@@ -833,19 +848,19 @@ function createGameCode()
 function formatDistance(metres)
 {
     //convert a number of metres to a nice string representation with the preferred unit
-    let message;
+    let output;
 
     if (localStorage.getItem("unitType") == "metric")
     {
         if (metres > 1000)
         {
             metres = (metres / 1000).toPrecision(3);
-            message = metres + "km";
+            output = metres + "km";
         }
         else
         {
             metres = metres.toPrecision(3);
-            message = metres + "m";
+            output = metres + "m";
         }
     }
     else
@@ -856,53 +871,53 @@ function formatDistance(metres)
         and metric in this country doesnt help*/
         if (yards > 1000)
         {
-            message = (yards / 1760).toPrecision(3) + " miles";
+            output = (yards / 1760).toPrecision(3) + " miles";
         }
         else
         {
-            message = yards.toPrecision(3) + " yards"
+            output = yards.toPrecision(3) + " yards"
         }
     }
     
 
-    return message;
+    return output;
 }
 
     
 function formatTimeString(seconds)
 {
     //convert number of seconds to a nice string representation (e.g. 73 seconds -> 1m 13s)
-    let displayedTime;
+    let output;
 
     if (seconds < 0)
     {
         //dont care about showing negative numbers, nicer to just stop at 0 instead of flickering as the timer runs out
-        displayedTime = 0 + "s";
+        output = 0 + "s";
     }
     else if (seconds < 60)
     {
-        displayedTime = (seconds > 10 ? Math.floor(seconds) : seconds.toPrecision(3)) + "s";
+        output = (seconds > 10 ? Math.floor(seconds) : seconds.toPrecision(3)) + "s";
     }
     else
     {
         let minutes = Math.floor(seconds / 60);
         seconds = seconds % 60;
-        displayedTime = Math.floor(seconds) + "s";
+        output = Math.floor(seconds) + "s";
 
         if (minutes >= 60)
         {
             let hours = Math.floor(minutes / 60);
             minutes = minutes % 60;
-            displayedTime = hours + "h " + minutes + "m " + displayedTime;
+            output = hours + "h " + minutes + "m " + output;
         }
         else
         {
-            displayedTime = minutes + "m " + displayedTime;
+            output = minutes + "m " + output;
         }
 
     }
 
-    return displayedTime;
+    return output;
 }
 
 function hideGuessImage()

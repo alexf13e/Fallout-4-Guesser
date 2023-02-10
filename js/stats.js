@@ -252,7 +252,7 @@ const ratingTitles = [
     "Sole Survivor"
 ];
 
-function statsCalculateXp(score)
+function statsCalculateXp(score, dist)
 {
     /*
     level based on rounds played:
@@ -264,16 +264,23 @@ function statsCalculateXp(score)
         10 points per custom round
     */
 
+    //no guess made, give them 1 pity xp
+    if (dist == null) return 1;
+
     let xp;
-    if (gameParameters.custom) xp = 10; //custom
-    else
+    switch (gameParameters.type)
     {
-        if (gameParameters.survival) xp = 50; //survival
-        else
-        {
-            if (gameParameters.showRemainingRounds) xp = 30; //normal
-            else xp = 20; //endless
-        }
+        case gameModeTypes.NORMAL:
+            xp = 30;
+            break;
+        
+        case gameModeTypes.ENDLESS:
+            xp = 20;
+            break;
+
+        case gameModeTypes.SURVIVAL:
+            xp = 50;
+            break;
     }
 
     if (score == 5001) xp *= 1.25;
@@ -318,21 +325,21 @@ function statsCalculateTitle()
 
 function statsUpdateRound(roundScore, dist, roundTime)
 {
-    playerStats.general.roundsPlayed.value++;
-
-    if (!gameParameters.survival)
+    if (!(gameParameters.type == gameModeTypes.SURVIVAL))
     {
         /*survival has different scoring and is more about getting good-enough
         guesses quickly rather than perfect ones, so don't alter general score
         stats if in survival*/
+        playerStats.general.roundsPlayed.value++;
         playerStats.general.totalScore.value += roundScore;
         if (roundScore > playerStats.general.highestRoundScore.value) playerStats.general.highestRoundScore.value = roundScore;
         playerStats.general.averageRoundScore.value = (playerStats.general.totalScore.value / Math.max(playerStats.general.roundsPlayed.value, 1)).toFixed(2);
-        if (roundScore >= 5000) playerStats.general.perfectScores.value++;
-        if (roundScore == 5001) playerStats.general.specialScores.value++;
     }
 
-    if (dist)
+    if (roundScore >= 5000) playerStats.general.perfectScores.value++;
+    if (roundScore == 5001) playerStats.general.specialScores.value++;
+
+    if (dist != null)
     {
         playerStats.general.totalGuessDist.value += dist;
         if (!playerStats.general.closestGuessDist.value || dist < playerStats.general.closestGuessDist.value) playerStats.general.closestGuessDist.value = dist;
@@ -341,32 +348,30 @@ function statsUpdateRound(roundScore, dist, roundTime)
     playerStats.general.timePlayed.value += roundTime;
     if (!playerStats.general.quickestRound.value || roundTime < playerStats.general.quickestRound.value) playerStats.general.quickestRound.value = roundTime;
 
-    if (gameParameters.showRemainingRounds && !gameParameters.custom)
+    switch (gameParameters.type)
     {
-        //normal mode
-        playerStats.normal.timePlayed.value += roundTime;
+        case gameModeTypes.NORMAL:
+            playerStats.normal.timePlayed.value += roundTime;
+            break;
+        
+        case gameModeTypes.ENDLESS:
+            playerStats.endless.roundsPlayed.value++;
+            playerStats.endless.timePlayed.value += roundTime;
+            break;
+        
+        case gameModeTypes.SURVIVAL: //preset survival mode only, not custom
+            if (roundNumber > playerStats.survival.highestRoundSurvived.value && gameOverStatus != gameOverTypes.FAILED_SCOREDRAIN) playerStats.survival.highestRoundSurvived.value = roundNumber;
+            playerStats.survival.totalRoundsSurvived.value++;
+            playerStats.survival.totalScore.value += roundScore;
+            playerStats.survival.averageRoundScore.value = (playerStats.survival.totalScore.value / Math.max(playerStats.survival.totalRoundsSurvived.value, 1)).toFixed(2);
+            if (survivalPeakScore > playerStats.survival.highestPeakScore.value) playerStats.survival.highestPeakScore.value = survivalPeakScore;
+            playerStats.survival.timePlayed.value += roundTime;
+            break;
     }
 
-    if (!(gameParameters.survival || gameParameters.custom || gameParameters.showRemainingRounds))
-    {
-        //endless mode
-        playerStats.endless.roundsPlayed.value++;
-        playerStats.endless.timePlayed.value += roundTime;
-    }
-
-    if (gameParameters.survival && !gameParameters.custom)
-    {
-        //preset survival mode only
-        if (roundNumber > playerStats.survival.highestRoundSurvived.value && gameOverStatus != gameOverTypes.FAILED_SCOREDRAIN) playerStats.survival.highestRoundSurvived.value = roundNumber;
-        playerStats.survival.totalRoundsSurvived.value++;
-        playerStats.survival.totalScore.value += roundScore;
-        playerStats.survival.averageRoundScore.value = (playerStats.survival.totalScore.value / Math.max(playerStats.survival.totalRoundsSurvived.value, 1)).toFixed(2);
-        if (survivalPeakScore > playerStats.survival.highestPeakScore.value) playerStats.survival.highestPeakScore.value = survivalPeakScore;
-        playerStats.survival.timePlayed.value += roundTime;
-    }
-
+    let prevLegendary = playerStats.rating.legendary;
     playerStats.rating.legendary = playerStats.general.specialScores.value >= 30;
-    playerStats.rating.xp += statsCalculateXp(roundScore);
+    playerStats.rating.xp += statsCalculateXp(roundScore, dist);
     
     let prevLevel = playerStats.rating.level;
     playerStats.rating.level = statsCalculateLevel(playerStats.rating.xp);
@@ -374,23 +379,25 @@ function statsUpdateRound(roundScore, dist, roundTime)
     let prevTitle = playerStats.rating.title;
     playerStats.rating.title = statsCalculateTitle();
 
-    if (prevLevel != playerStats.rating.level || prevTitle != playerStats.rating.title) showPromotionMessage = true;
+    if (prevLegendary != playerStats.rating.legendary ||
+        prevLevel != playerStats.rating.level ||
+        prevTitle != playerStats.rating.title)
+            showPromotionMessage = true;
 
     localStorage.setItem("playerStats", JSON.stringify(playerStats));
 }
 
 function statsUpdateGame(gameScore, gameTime)
 {
-    if (gameParameters.showRemainingRounds && !gameParameters.custom)
+    if (gameParameters.type == gameModeTypes.NORMAL)
     {
-        //normal mode
         playerStats.normal.gamesCompleted.value++;
         if (gameScore > playerStats.normal.highestGameScore.value) playerStats.normal.highestGameScore.value = gameScore;
         if (gameScore >= MAX_SCORE * 5) playerStats.normal.perfectGames.value++;
         if (!playerStats.normal.quickestGame.value || gameTime < playerStats.normal.quickestGame.value) playerStats.normal.quickestGame.value = gameTime;
     }
 
-    if (gameOverStatus == gameOverTypes.FAILED_SCOREDRAIN) playerStats.survival.deaths.value++;
+    if (gameOverStatus == gameOverTypes.FAILED_SCOREDRAIN || gameOverStatus == gameOverTypes.FAILED_MINSCORE) playerStats.survival.deaths.value++;
     if (gameOverStatus == gameOverTypes.COMPLETED_ROUNDS_SURVIVAL) playerStats.survival.cars.value++;
 
     localStorage.setItem("playerStats", JSON.stringify(playerStats));
@@ -398,11 +405,14 @@ function statsUpdateGame(gameScore, gameTime)
 
 function statsAddGameCode(code)
 {
-    //store last 5 game codes, most recent is first item in array
-    playerStats.previousGameCodes.value.unshift(code);
-    if (playerStats.previousGameCodes.value.length > 5) playerStats.previousGameCodes.value.pop();
-
-    localStorage.setItem("playerStats", JSON.stringify(playerStats));
+    //store last 5 game codes, most recent is first item in array.
+    //dont add if it is the same as the most recent
+    if (code != playerStats.previousGameCodes.value[0])
+    {
+        playerStats.previousGameCodes.value.unshift(code);
+        if (playerStats.previousGameCodes.value.length > 5) playerStats.previousGameCodes.value.pop();
+        localStorage.setItem("playerStats", JSON.stringify(playerStats));
+    }
 }
 
 function statsCreateP(text)
@@ -459,12 +469,20 @@ function statsGenerateScreen()
 
     uiScreenStats.element.replaceChildren();
 
-    let pTitle = document.createElement("p");
-    pTitle.innerHTML = "Statistics - " + (playerStats.rating.legendary ? "★ " : "") + "Level " + playerStats.rating.level + " " + playerStats.rating.title + "<br><br>";
-    uiScreenStats.element.appendChild(pTitle);
+    const dvTitle = document.createElement("div");
+    const pTitle = document.createElement("p");
+
+    dvTitle.classList.add("statTitle");
+    pTitle.innerHTML = (playerStats.rating.legendary ? "★ " : "") + playerStats.rating.title;
+    dvTitle.appendChild(pTitle);
+    const xpBar = createXPBar();
+    xpBar.classList.remove("xpBarOuter");
+    xpBar.classList.add("xpBarOuterStats");
+    dvTitle.appendChild(xpBar);
+    uiScreenStats.element.appendChild(dvTitle);
 
 
-    let dvCodeSection = document.createElement("div");
+    const dvCodeSection = document.createElement("div");
     dvCodeSection.classList.add("statSection");
     
     dvCodeSection.appendChild(statsCreateP("Previous game codes (newest at top)"));
@@ -475,7 +493,7 @@ function statsGenerateScreen()
     }
     else
     {
-        let dvCodes = document.createElement("div");
+        const dvCodes = document.createElement("div");
         for (let code of playerStats.previousGameCodes.value)
         {
             dvCodes.appendChild(statsCreateP(code));

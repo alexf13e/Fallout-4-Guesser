@@ -35,6 +35,11 @@ input[type=text]::placeholder
     opacity: 1;
 }
 
+option:disabled
+{
+    display: none;
+}
+
 p
 {
     margin: 0;
@@ -477,6 +482,44 @@ ul
 .statText
 {
     text-align: left;
+}
+
+.statTitle
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 3%;
+}
+
+.xpBarInner
+{
+    height: 100%;
+    background-color: var(--cPipGreen);
+}
+
+.xpBarOuter
+{
+    width: 40%;
+    height: 2%;
+    margin-top: 2%;
+    border: solid var(--cPipGreen) 2px;
+    border-top: none;
+}
+
+.xpBarOuterStats
+{
+    width: 80%;
+    height: 20%;
+    margin-top: 2%;
+    border: solid var(--cPipGreen) 2px;
+    border-top: none;
+}
+
+.xpText
+{
+    margin-top: 1%;
+    color: var(--cPipGreen);
+    text-align: center;
 }
 
 @media (min-aspect-ratio: 1.77)
