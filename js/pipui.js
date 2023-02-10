@@ -93,8 +93,6 @@ function checkLoadedImages()
         pipNavChange("inv");
         pipDraw();
         pipSetVisible(true);
-
-        createXPBar();
     }
 }
 
