@@ -135,6 +135,15 @@ let tutorialImageIds = [637, 649, 94, 289, 416];
 let mapHintTier = 0;
 let scoreCap = 5000;
 
+const tipMessages = [
+    "you can press shift to quickly show/hide the pipboy, and space to confirm a guess",
+    "you can get up to 2 hints per round from the radio tab, with increasing accuracy",
+    "the lighting direction on the map matches the game images",
+    "in survival mode, it's generally better to get a good-enough guess quickly than a perfect one, but you'll be rewarded if you do",
+    "normal and endless mode keep track of the images shown to prevent seeing duplicates, but survival and custom modes start with a new set each game to allow for sharing the game code",
+    "the pip-boy shows the radiation level of the area you are in, as well as an indication of how difficult the location may be to guess"
+];
+
 
 ////////////////Resources & Initialisation////////////////
 
@@ -328,13 +337,6 @@ function newGame(repeat)
         mapDefaultPos();
     }
 
-    if (gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.isCustom)
-    {
-        let gc = createGameCode();
-        addMessage("Game code for sharing: " + gc + "<br>", false);
-        statsAddGameCode(gc);
-    }
-
     if (tutorialActive)
     {
         addMessage("When the game starts, the pipboy will be hidden and you will " +
@@ -348,6 +350,18 @@ function newGame(repeat)
         addMessage("If you feel completely lost, you can radio for help from Preston, " +
         "I'm sure he'll be happy to mark your map with a hint.<br><br>")
         addMessage("Click the start button when you're ready<br><br>");
+    }
+    else
+    {
+        let messageIndex = Math.floor(Math.random() * tipMessages.length);
+        addMessage("Tip: " + tipMessages[messageIndex] + "<br><br>");
+    }
+
+    if (gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.isCustom)
+    {
+        let gc = createGameCode();
+        addMessage("Game code for sharing: " + gc + "<br><br>", false);
+        statsAddGameCode(gc);
     }
 
 
