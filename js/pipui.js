@@ -77,9 +77,9 @@ let pipVisible = true
 let buttonFlashTimeout;
 let buttonFlashing = false;
 
-const greenColour = "rgb(20, 255, 23)";
-const specialColour = "cyan";
-const deathColour = "rgb(225, 93, 61)";
+const greenColour = "var(--cPipGreen)";
+const specialColour = "var(--cPipSpecial)";
+const deathColour = "var(--cPipRed)";
 
 function checkLoadedImages()
 {

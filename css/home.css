@@ -185,7 +185,8 @@ select > option
 
 .menuItem
 {
-    background-color: rgba(10, 88, 11, 0.6);
+    background-color: rgba(10, 88, 11, 0.7);
+    backdrop-filter: blur(5px);
     padding: 1%;
     color: var(--cPipGreen);
 }

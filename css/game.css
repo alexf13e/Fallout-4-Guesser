@@ -1,6 +1,8 @@
 :root
 {
     --cPipGreen: rgb(20, 255, 23);
+    --cPipRed: rgb(225, 93, 61);
+    --cPipSpecial: cyan;
     --cClear: rgba(0, 0, 0, 0);
     --cImageShadow: rgba(0, 0, 0, 0.6);
     --fontSmall: 0.8vw;
