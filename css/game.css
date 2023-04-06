@@ -390,6 +390,16 @@ ul
     top: 20%;
 }
 
+.leaflet-image-layer
+{
+    border-image: url("../assets/border.png");
+    border-image-outset: 7px;
+    border-image-slice: 10;
+    border-image-width: 8px;
+    border-image-repeat: round
+    
+}
+
 .leaflet-overlay-pane
 {
     z-index: 100;
