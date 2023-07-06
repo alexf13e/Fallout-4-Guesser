@@ -13,6 +13,6 @@ window.onload = () => {
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        gtag('config', 'G-LB4FV46CJK');
+        gtag('config', 'G-LB4FV46CJK', { 'anonymize_ip': true });
     }
 };
