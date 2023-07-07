@@ -56,18 +56,19 @@ imDif.load("./assets/pip/dif.png");
 
 let pipboyImageProgressInterval = window.setInterval(updatePipboyLoadingProgress, 500);
 
-switch (localStorage.getItem("screenType"))
+switch (getLocalStorage("screenType"))
 {
-    case "dirt1":
-        imPipboy.load("./assets/pip/pipboyndirt.png");
-        break;
-    
     case "dirt2":
         imPipboy.load("./assets/pip/pipboyfdirt.png");
         break;
     
     case "clean":
         imPipboy.load("./assets/pip/pipboyclean.png");
+        break;
+
+    case "dirt1":
+    default:
+        imPipboy.load("./assets/pip/pipboyndirt.png");
         break;
 }
 
@@ -141,11 +142,6 @@ function pipNavChange(screen)
             statsGenerateScreen();
             pipDraw();
             break;
-
-        case "inv":
-            imNavCurrent = imNavInv;
-            pipDraw();
-            break;
         
         case "map":
             if (!map) mapInit();
@@ -164,6 +160,12 @@ function pipNavChange(screen)
         
         case "radio":
             imNavCurrent = imNavRadio;
+            pipDraw();
+            break;
+
+        default:
+        case "inv":
+            imNavCurrent = imNavInv;
             pipDraw();
             break;
     }

@@ -1,7 +1,7 @@
 window.onload = () => {
 
     //disable spying for people who don't want it
-    if (!(navigator.doNotTrack == "1" || navigator.doNotTrack == "yes" || window.doNotTrack == "1") && localStorage.getItem("enableTracking") === "true")
+    if (!(navigator.doNotTrack == "1" || navigator.doNotTrack == "yes" || window.doNotTrack == "1") && getLocalStorage("enableTracking"))
     {
         var glowScript = document.createElement("script");
         glowScript.src = "https://www.googletagmanager.com/gtag/js?id=G-LB4FV46CJK";

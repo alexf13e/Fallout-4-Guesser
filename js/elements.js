@@ -21,11 +21,11 @@ const ms4 = document.getElementById("ms4");
 
 const dvInvInfo = document.getElementById("dvInvInfo");
 
-const uiBtnModeNormal = new PipUIElement(document.getElementById("btnModeNormal"), "block", [], [], () => !tutorialActive || tutorialGameComplete);
-const uiBtnModeEndless = new PipUIElement(document.getElementById("btnModeEndless"), "block", [], [], () => !tutorialActive || tutorialGameComplete);
-const uiBtnModeSurvival = new PipUIElement(document.getElementById("btnModeSurvival"), "block", [], [], () => !tutorialActive || tutorialGameComplete);
-const uiBtnModeCustom = new PipUIElement(document.getElementById("btnModeCustom"), "block", [], [], () => !tutorialActive || tutorialGameComplete);
-const uiBtnModeTutorial = new PipUIElement(document.getElementById("btnModeTutorial"), "block", [], [], () => tutorialActive && !tutorialGameComplete);
+const uiBtnModeNormal = new PipUIElement(document.getElementById("btnModeNormal"), "block", [], [], () => !tutorialActive);
+const uiBtnModeEndless = new PipUIElement(document.getElementById("btnModeEndless"), "block", [], [], () => !tutorialActive);
+const uiBtnModeSurvival = new PipUIElement(document.getElementById("btnModeSurvival"), "block", [], [], () => !tutorialActive);
+const uiBtnModeCustom = new PipUIElement(document.getElementById("btnModeCustom"), "block", [], [], () => !tutorialActive);
+const uiBtnModeTutorial = new PipUIElement(document.getElementById("btnModeTutorial"), "block", [], [], () => tutorialActive);
 
 const dvInfoNormal = document.getElementById("dvInfoNormal");
 const dvInfoEndless = document.getElementById("dvInfoEndless");

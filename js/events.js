@@ -96,8 +96,10 @@ window.addEventListener("keypress", (event) => {
 window.addEventListener("beforeunload", (event) => {
     /*for the specific case of played game -> repeated game -> left half way through,
     so the stored roundOffset isnt half way through the repeated game when they come back.
-    doesn't matter if activated in other conditions, roundOffset will already be maxOffset*/
-    localStorage.setItem("roundOffset", maxOffset);
+    doesn't matter if activated in other conditions, roundOffset will already be maxOffset*/    
+    
+    //fix annoying issue from moving localstorage to its own json that no one would ever encounter unless deliberately trying to break things
+    if (localStorage.getItem("fallout4guesser") != null) setLocalStorage("roundOffset", maxOffset);
 });
 
 

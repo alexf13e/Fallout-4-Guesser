@@ -2,6 +2,7 @@
 //want to read this code, do you? https://youtu.be/j0_u26Vpb4w?t=483
 
 DEBUG_DISABLE_RANDOM = false;
+checkLocalStorage();
 
 //setup Image to allow easily checking loading progress
 //https://stackoverflow.com/questions/14218607/javascript-loading-progress-of-an-image
@@ -124,12 +125,15 @@ let scoreDecayUpdateTimeout;
 
 let gameParameters = {}; //current gameParameters, will copy from those of another mode (gamemodes.js)
 
-let maxOffset = 0;
-maxOffset = parseInt(localStorage.getItem("roundOffset"));
-if (!localStorage.getItem("seed")) newStoredSeed();
+let maxOffset = getLocalStorage("roundOffset");
+if (maxOffset === null)
+{
+    maxOffset = 0;
+    setLocalStorage("roundOffset", 0);
+}
+if (getLocalStorage("seed") === null) newStoredSeed();
 
-let tutorialActive = (localStorage.getItem("tutorialActive") === "true");
-let tutorialGameComplete = false; //need this as well as tutorialActive to say the game has been complete, then disable tutorial mode when a new game is started
+let tutorialActive = getLocalStorage("tutorialActive");
 let tutorialImageIds = [637, 649, 94, 289, 416];
 
 let mapHintTier = 0;
@@ -182,8 +186,8 @@ function updateImage()
     {
         if (!(gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.isCustom))
         {
-            localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) + 1);
-            maxOffset = Math.max(parseInt(localStorage.getItem("roundOffset")), maxOffset);
+            setLocalStorage("roundOffset", getLocalStorage("roundOffset") + 1);
+            maxOffset = Math.max(getLocalStorage("roundOffset"), maxOffset);
         }
     
         currentImageData = allImageData[randomisedImageOrder[locationIndex]];
@@ -264,12 +268,6 @@ function ngStates()
     showPromotionMessage = false;
     mapHintTier = 0;
     scoreCap = MAX_SCORE
-
-    if (tutorialActive && tutorialGameComplete)
-    {
-        tutorialActive = false;
-        localStorage.setItem("tutorialActive", false);
-    }
 }
 
 function ngUI()
@@ -339,17 +337,15 @@ function newGame(repeat)
 
     if (tutorialActive)
     {
-        addMessage("When the game starts, the pipboy will be hidden and you will " +
-        "be shown an image taken from somewhere in The Commonwealth. Click the icon " + 
-        "in the bottom left to toggle showing/hiding the pipboy, and place a marker " +
-        "on the map where you think the player was standing to take the image. " +
-        "You can click again to change your mind, or confirm your guess to end " +
-        "the round early. After 5 rounds, the game is over and you will be shown a " +
-        "summary of the locations and how far you were from them. You can also see " +
-        "the summary so far at any point by changing to the data screen in the top right.");
+        addMessage("When the game starts, the Pip-Boy will be hidden and you will be shown an image taken from somewhere " +
+        "in The Commonwealth.<br><br>");
+        addMessage("Click the icon in the bottom left to toggle showing/hiding the pipboy, and place a marker on the map " +
+        "where you think the player was standing to take the image. Click somewhere else to change your mind, or confirm " +
+        "your guess to end the round.<br><br>");
+        addMessage("After 5 rounds, the game is over and you will be shown a summary of the locations and how far you were " +
+        "from them.<br><br>");
         addMessage("If you feel completely lost, you can radio for help from Preston, " +
-        "I'm sure he'll be happy to mark your map with a hint.<br><br>")
-        addMessage("Click the start button when you're ready<br><br>");
+        "I'm sure he'll be happy to mark your map with a hint.<br><br>");
     }
     else
     {
@@ -548,13 +544,6 @@ function gameOver(reason)
             gameOverMessage = "Game over";
     }
 
-    if (tutorialActive)
-    {
-        gameOverMessage = "Tutorial completed, other modes now available in inventory";
-        tutorialGameComplete = true;        
-        pipModeInfoChange("normal");
-    }
-
     gameOverStatus = reason;
     currentGameState = gameStates.OVER;
     updateUIVisibility("map");
@@ -562,7 +551,15 @@ function gameOver(reason)
 }
 
 function enableSummary()
-{    
+{
+    if (tutorialActive)
+    {
+        gameOverMessage = "Tutorial completed, other modes now available in inventory";
+        pipModeInfoChange("normal");
+        tutorialActive = false;
+        setLocalStorage("tutorialActive", false);
+    }
+    
     addMessage("<br>"); //add an empty line for readability
     addMessage(gameOverMessage, false);
     let scoreMessage = totalScore;
@@ -864,7 +861,7 @@ function formatDistance(metres)
     //convert a number of metres to a nice string representation with the preferred unit
     let output;
 
-    if (localStorage.getItem("unitType") == "metric")
+    if (getLocalStorage("unitType") == "metric")
     {
         if (metres > 1000)
         {
@@ -972,9 +969,9 @@ function getReportData()
         imageData: currentImageData,
         roundNumber: roundNumber,
         locationIndex: locationIndex,
-        mapType: localStorage.getItem("mapType"),
-        screenType: localStorage.getItem("screenType"),
-        units: localStorage.getItem("unitType")
+        mapType: getLocalStorage("mapType"),
+        screenType: getLocalStorage("screenType"),
+        units: getLocalStorage("unitType")
     };
 
     navigator.clipboard.writeText("```" + JSON.stringify(info, null, 3) + "```");
@@ -991,7 +988,72 @@ function newStoredSeed()
 {
     gameParameters.roundOffset = 0;
     gameParameters.seed = generateSeed();
-    localStorage.setItem("seed", gameParameters.seed);
-    localStorage.setItem("roundOffset", 0);
+    setLocalStorage("seed", gameParameters.seed);
+    setLocalStorage("roundOffset", 0);
     maxOffset = 0;
+}
+
+function getLocalStorage(name)
+{
+    let ls = localStorage.getItem("fallout4guesser");
+    if (ls === null) return null;
+    else ls = JSON.parse(ls);
+    
+    let value = ls[name];
+    if (value === undefined) return null;
+    else return value;
+}
+
+function setLocalStorage(name, value)
+{
+    let ls = localStorage.getItem("fallout4guesser");
+    if (ls === null) ls = {};
+    else ls = JSON.parse(ls);
+
+    ls[name] = value;
+
+    localStorage.setItem("fallout4guesser", JSON.stringify(ls));
+}
+
+function checkLocalStorage()
+{
+    if (localStorage.getItem("fallout4guesser") === null)
+    {
+        let ls = {};
+        
+        let enableTracking = localStorage.getItem("enableTracking");
+        let mapType = localStorage.getItem("mapType");
+        let playerStats = localStorage.getItem("playerStats");
+        let roundOffset = localStorage.getItem("roundOffset");
+        let screenType = localStorage.getItem("screenType");
+        let seed = localStorage.getItem("seed");
+        let tutorialActive = localStorage.getItem("tutorialActive");
+        let unitType = localStorage.getItem("unitType");
+
+        if (enableTracking != null) ls.enableTracking = (enableTracking === "true");
+        else ls.enableTracking = true;
+
+        if (mapType != null) ls.mapType = mapType;
+        else ls.mapType = "satellite";
+
+        if (playerStats != null) ls.playerStats = JSON.parse(playerStats);
+        //default stats generated by stats.js if not present
+
+        if (roundOffset != null) ls.roundOffset = parseInt(roundOffset);
+        else ls.roundOffset = 0;
+
+        if (screenType != null) ls.screenType = screenType;
+        else ls.screenType = "dirt1";
+
+        if (seed != null) ls.seed = parseInt(seed);
+        //default seed generated if no seed present when page loaded
+
+        if (tutorialActive != null) ls.tutorialActive = (tutorialActive === "true");
+        else ls.tutorialActive = true;
+
+        if (unitType != null) ls.unitType = unitType;
+        else ls.unitType = "metric";
+
+        localStorage.setItem("fallout4guesser", JSON.stringify(ls));
+    }
 }

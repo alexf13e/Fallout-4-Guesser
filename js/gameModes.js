@@ -24,17 +24,17 @@ const gpNormal = {
         if (repeat)
         {
             //clicked "repeat game" at end of previous one, so want to have the same images as before
-            localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) - gameParameters.rounds);
-            gameParameters.roundOffset = parseInt(localStorage.getItem("roundOffset"));
+            setLocalStorage("roundOffset", getLocalStorage("roundOffset") - gameParameters.rounds);
+            gameParameters.roundOffset = getLocalStorage("roundOffset");
         }
         else
         {
             //not repeating a game, want new images
-            localStorage.setItem("roundOffset", maxOffset);
+            setLocalStorage("roundOffset", maxOffset);
             gameParameters.roundOffset = maxOffset;
         }
 
-        gameParameters.seed = parseInt(localStorage.getItem("seed"));
+        gameParameters.seed = getLocalStorage("seed");
     },
 
     modeConfirmGuess()
@@ -75,17 +75,17 @@ const gpEndless = {
         if (repeat)
         {
             //clicked "repeat game" at end of previous one, so want to have the same images as before
-            localStorage.setItem("roundOffset", parseInt(localStorage.getItem("roundOffset")) - gameParameters.rounds);
-            gameParameters.roundOffset = parseInt(localStorage.getItem("roundOffset"));
+            setLocalStorage("roundOffset", getLocalStorage("roundOffset") - gameParameters.rounds);
+            gameParameters.roundOffset = getLocalStorage("roundOffset");
         }
         else
         {
             //not repeating a game, want new images
-            localStorage.setItem("roundOffset", maxOffset);
+            setLocalStorage("roundOffset", maxOffset);
             gameParameters.roundOffset = maxOffset;
         }
 
-        gameParameters.seed = parseInt(localStorage.getItem("seed"));
+        gameParameters.seed = getLocalStorage("seed");
     },
 
     modeConfirmGuess()

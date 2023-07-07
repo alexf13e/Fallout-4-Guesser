@@ -179,7 +179,7 @@ const defaultStats = {
     }
 };
 
-let playerStats = localStorage.getItem("playerStats");
+let playerStats = getLocalStorage("playerStats");
 if (!playerStats)
 {
     //No stored stats, generate default ones
@@ -187,11 +187,7 @@ if (!playerStats)
     playerStats = {};
     Object.assign(playerStats, defaultStats);
 
-    localStorage.setItem("playerStats", JSON.stringify(playerStats));
-}
-else
-{
-    playerStats = JSON.parse(playerStats);
+    setLocalStorage("playerStats", playerStats);
 }
 
 if (playerStats.version != statsVersion)
@@ -384,7 +380,7 @@ function statsUpdateRound(roundScore, dist, roundTime)
         prevTitle != playerStats.rating.title)
             showPromotionMessage = true;
 
-    localStorage.setItem("playerStats", JSON.stringify(playerStats));
+    setLocalStorage("playerStats", playerStats);
 }
 
 function statsUpdateGame(gameScore, gameTime)
@@ -400,7 +396,7 @@ function statsUpdateGame(gameScore, gameTime)
     if (gameOverStatus == gameOverTypes.FAILED_SCOREDRAIN || gameOverStatus == gameOverTypes.FAILED_MINSCORE) playerStats.survival.deaths.value++;
     if (gameOverStatus == gameOverTypes.COMPLETED_ROUNDS_SURVIVAL) playerStats.survival.cars.value++;
 
-    localStorage.setItem("playerStats", JSON.stringify(playerStats));
+    setLocalStorage("playerStats", playerStats);
 }
 
 function statsAddGameCode(code)
@@ -411,7 +407,7 @@ function statsAddGameCode(code)
     {
         playerStats.previousGameCodes.value.unshift(code);
         if (playerStats.previousGameCodes.value.length > 5) playerStats.previousGameCodes.value.pop();
-        localStorage.setItem("playerStats", JSON.stringify(playerStats));
+        setLocalStorage("playerStats", playerStats);
     }
 }
 

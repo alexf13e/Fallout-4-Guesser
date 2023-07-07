@@ -96,7 +96,7 @@ function mapInit()
         summaryMarkers = L.layerGroup();
         map.addLayer(summaryMarkers);
 
-        switch (localStorage.getItem("mapType"))
+        switch (getLocalStorage("mapType"))
         {
             case "satellite":
                 //centreOffsetX, centreOffsetY, game units per map unit
