@@ -1021,7 +1021,7 @@ function checkLocalStorage()
     {
         let ls = {};
         
-        let enableTracking = localStorage.getItem("enableTracking");
+        // let enableTracking = localStorage.getItem("enableTracking");
         let mapType = localStorage.getItem("mapType");
         let playerStats = localStorage.getItem("playerStats");
         let roundOffset = localStorage.getItem("roundOffset");
@@ -1030,8 +1030,8 @@ function checkLocalStorage()
         let tutorialActive = localStorage.getItem("tutorialActive");
         let unitType = localStorage.getItem("unitType");
 
-        if (enableTracking != null) ls.enableTracking = (enableTracking === "true");
-        else ls.enableTracking = true;
+        // if (enableTracking != null) ls.enableTracking = (enableTracking === "true");
+        // else ls.enableTracking = true;
 
         if (mapType != null) ls.mapType = mapType;
         else ls.mapType = "satellite";

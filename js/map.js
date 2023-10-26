@@ -71,7 +71,6 @@ function mapInit()
             crs: L.CRS.Simple,
             minZoom: -2,
             maxZoom: 5,
-            zoomSnap: 0.5,
             maxBounds: panBounds,
             maxBoundsViscosity: 0.5,
             attributionControl: false

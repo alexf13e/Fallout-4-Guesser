@@ -287,6 +287,11 @@ ul
     pointer-events: none;
 }
 
+#dvReport
+{
+    text-decoration: underline;
+}
+
 #dvReport:hover
 {
     cursor: pointer;

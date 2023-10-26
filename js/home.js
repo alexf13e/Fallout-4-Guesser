@@ -2,7 +2,7 @@
 const slMap = document.getElementById("slMap");
 const slScreen = document.getElementById("slScreen");
 const slUnitType = document.getElementById("slUnitType");
-const cbTracking = document.getElementById("cbTracking");
+// const cbTracking = document.getElementById("cbTracking");
 
 //These ones seemed somewhat suitable as background images
 const bgImages = [
@@ -27,12 +27,12 @@ window.onload = () => {
     let mapType = getLocalStorage("mapType");
     let screenType = getLocalStorage("screenType");
     let unitType = getLocalStorage("unitType");
-    let tracking = getLocalStorage("enableTracking");
+    // let tracking = getLocalStorage("enableTracking");
 
     if (mapType != null) slMap.value = mapType;
     if (screenType != null) slScreen.value = screenType;
     if (unitType != null) slUnitType.value = unitType;
-    if (tracking != null) cbTracking.checked = tracking;
+    // if (tracking != null) cbTracking.checked = tracking;
 };
 
 function toggleOptions()
@@ -47,7 +47,7 @@ function startGame()
     setLocalStorage("mapType", slMap.value);
     setLocalStorage("screenType", slScreen.value);
     setLocalStorage("unitType", slUnitType.value);
-    setLocalStorage("enableTracking", cbTracking.checked);
+    // setLocalStorage("enableTracking", cbTracking.checked);
 
     if (getLocalStorage("tutorialActive") === null) setLocalStorage("tutorialActive", true);
 
@@ -100,7 +100,7 @@ function checkLocalStorage()
     {
         let ls = {};
         
-        let enableTracking = localStorage.getItem("enableTracking");
+        // let enableTracking = localStorage.getItem("enableTracking");
         let mapType = localStorage.getItem("mapType");
         let playerStats = localStorage.getItem("playerStats");
         let roundOffset = localStorage.getItem("roundOffset");
@@ -109,7 +109,7 @@ function checkLocalStorage()
         let tutorialActive = localStorage.getItem("tutorialActive");
         let unitType = localStorage.getItem("unitType");
 
-        if (enableTracking != null) ls.enableTracking = (enableTracking === "true");
+        // if (enableTracking != null) ls.enableTracking = (enableTracking === "true");
         if (mapType != null) ls.mapType = mapType;
         if (playerStats != null) ls.playerStats = JSON.parse(playerStats);
         if (roundOffset != null) ls.roundOffset = parseInt(roundOffset);

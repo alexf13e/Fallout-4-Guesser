@@ -194,13 +194,7 @@ class PZImage
     {
         this.prevMouse = [event.x, event.y];
 
-        if (event.deltaY > 0)
-        {
-            this.changeZoom(-1);
-        }
-        else
-        {
-            this.changeZoom(1);
-        }
+        let sens = 0.05;
+        this.changeZoom(-event.deltaY * sens);
     }
 }

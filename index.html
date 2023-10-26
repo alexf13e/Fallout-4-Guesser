@@ -51,8 +51,8 @@
                 </select>
             </span>
 
-            <label for="cbTracking">Count my views of the game</label>
-            <input id="cbTracking" type="checkbox" checked>
+            <!-- <label for="cbTracking">Count my views of the game</label>
+            <input id="cbTracking" type="checkbox" checked> -->
         </div>
         <button id="btnClearData" class="menuButton" onclick="clearData()">Clear Data</button>
     </div>
@@ -95,6 +95,11 @@
         <h1>Known Bugs</h1>
         <ul>
             <li>
+                When dragging the map and the mouse is released while hovering the disabled "make guess" button, the map
+                does not get released from grabbing until another place on the screen is clicked and released again - 
+                basically the disabled button eats the mouse release event and I've no idea how to fix it
+            </li>
+            <li>
                 Some areas of water on the satellite map have visible borders between
                 differently coloured regions. Not much I can do, this is just how
                 they are in the actual game and the map rendering program renders
@@ -122,10 +127,8 @@
                 traced/had images taken directly from in-game, and the in-game map,
                 page background and Preston icon were taken from the game too.</li>
             <li><a href="https://leafletjs.com/" target="_blank" rel="noreferrer noopener">Leaflet.js</a> for the really
-                good map library used which is far nicer than the way I was doing
-                it before - just dragging a single giant image around</li>
-            <li>Emil, for creating the fancy dirt texture, telling me how web things
-                work and helping test the game.</li>
+                good map library</li>
+            <li>Emil, for creating the fancy dirt texture, telling me how web things work and helping test the game.</li>
             <li><a href="https://www.reddit.com/user/According-Ad-8181/" target="_blank" rel="noreferrer noopener">u/According-Ad-8181</a>,
                 for telling me about the <a href="https://github.com/fo76utils/fo76utils" target="_blank" rel="noreferrer noopener">fo76utils tool</a>
                 for getting a good quality satellite map image, and helping me get
@@ -139,6 +142,31 @@
         <br>
 
         <h1>Updates</h1>
+        1.6.5 - 26th October 2023
+        <ul>
+            <li>
+                Minor zoom improvements for map and location image
+            </li>
+            <li>
+                Disabled analytics as I no longer feel they are worth including. The game has been getting a steady
+                300ish players per month for several months. I have no idea where from, I haven't posted about the game
+                since update 1.6, but thank you for playing.
+                For those interested, here are some other stats:
+                <ul>
+                    <li>
+                        From June 2022 to now, there have been just over 4000 unique players
+                    </li>
+                    <li>
+                        The game has been played in 82 countries, with the most popular being the USA (1,873), the UK
+                        (556) and Germany (224)
+                    </li>
+                    <li>
+                        The average player plays the game for 4 minutes and 30 seconds
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
         1.6.4 - 6th April 2023
         <ul>
             <li>
@@ -505,7 +533,7 @@
 
     </div>
 
-    <div id="dvAnalytics">
+    <!-- <div id="dvAnalytics">
         <p>The game uses google analytics because I find it interesting to see how
             many people have played it. I have tried to turn off anything unnecceasry,
             so (as far as I am aware) all I can see is the number of views, whether
@@ -516,7 +544,7 @@
             on this page to disable it - either or both will work. This page isn't
             counted, only the main game is.
             Hope thats ok.</p>
-    </div>
+    </div> -->
     
 </body>
 </html>
