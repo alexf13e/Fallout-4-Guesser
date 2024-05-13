@@ -202,6 +202,10 @@ let gpCustom = {
         {
             confirmGuessSurvival(score, gamer);
         }
+        else
+        {
+            roundsRemaining--;
+        }
     },
 
     getScore(dist)

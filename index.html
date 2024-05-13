@@ -95,9 +95,9 @@
         <h1>Known Bugs</h1>
         <ul>
             <li>
-                When dragging the map and the mouse is released while hovering the disabled "make guess" button, the map
-                does not get released from grabbing until another place on the screen is clicked and released again - 
-                basically the disabled button eats the mouse release event and I've no idea how to fix it
+                Some world changes that take place in the game are shown on the map but not in the game images, as they
+                were taken on a fresh save. These include the Prydwen being over the airport, and the USS Constitution
+                being on top of the skyscraper (it is also shown as being on the bank where it starts).
             </li>
             <li>
                 Some areas of water on the satellite map have visible borders between
@@ -142,6 +142,17 @@
         <br>
 
         <h1>Updates</h1>
+        1.6.6 - 13th May 2024
+        <ul>
+            <li>
+                Fixed bug where the map could get stuck being dragged if the mouse was released on the
+                confirm guess button before making a guess
+            </li>
+            <li>
+                Fixed bug where custom games would not end on the amount of rounds specified
+            </li>
+        </ul>
+
         1.6.5 - 26th October 2023
         <ul>
             <li>

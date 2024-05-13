@@ -448,6 +448,7 @@ ul
 .pipButton:disabled
 {
     color: lightgray;
+    pointer-events: none;
 }
 
 .pipButton:disabled:hover
