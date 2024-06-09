@@ -142,10 +142,15 @@ let scoreCap = 5000;
 const tipMessages = [
     "you can press shift to quickly show/hide the pipboy, and space to confirm a guess",
     "you can get up to 2 hints per round from the radio tab, with increasing accuracy",
-    "the lighting direction on the map matches the game images",
-    "in survival mode, it's generally better to get a good-enough guess quickly than a perfect one, but you'll be rewarded if you do",
+    "the sun shines from the south in all images, and slight lighting is visible on the map",
+    "in survival mode, it's generally better to get a good-enough guess quickly than a perfect one, but very close guesses have a bonus effect",
     "normal and endless mode keep track of the images shown to prevent seeing duplicates, but survival and custom modes start with a new set each game to allow for sharing the game code",
-    "the pip-boy shows the radiation level of the area you are in, as well as an indication of how difficult the location may be to guess"
+    "the pip-boy shows the radiation level of the area you are in, as well as an indication of how difficult the location may be to guess",
+    "the images were taken at the start of the game, meaning world-changing events like the Prydwen arriving or the USS Constitution are not reflected in images (but are in the map, apologies for confusion)",
+    "survival mode offers the most xp per round, followed by normal and then endless",
+    "you can start a new game at any point by going to the inventory screen",
+    "you can drag and zoom the location image as well as the map",
+    "if you are really stuck, you can get a hint of the general area of the location in the radio tab"
 ];
 
 
@@ -978,8 +983,7 @@ function getReportData()
 
     //alert stops clipboard from being allowed to write in chrome. please forgive me
     window.setTimeout(() => {
-        alert("Information copied to clipboard. Please send via discord or email, " +
-        "along with a description of the problem if you have anything to add");
+        alert("Information copied to clipboard. Please send via email along with a description of the problem if you have anything to add");
     }, 500)
     
 }
