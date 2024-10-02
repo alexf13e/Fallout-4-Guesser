@@ -62,91 +62,106 @@
         <h1 id="hMainTitle">Fallout 4 Guesser</h1>
         <br>
         <p>
-            Figure out where an image was taken in the world of Fallout 4 and get
-            a score based on how close you are.<br>
-            There are currently 788 locations accross the Commonwealth, 3 gamemodes
-            along with a custom mode where you can set various options and get a code
-            for others to play with the same rules and locations.
+            Figure out where an image was taken in the world of Fallout 4 and get a score based on how close you are.<br>
+            There are currently 788 locations accross the Commonwealth and 3 gamemodes. There is also a custom mode
+            where you can set various options for the game. Custom and survival mode allow for sharing a code for others
+            to play with the same rules and locations.
             <br><br>
 
-            Idea taken from these games, mainly gtaguessr for showing me the concept
-            is actually fun and worth pursuing for other games:<br>
-            <a href="https://www.geoguessr.com" target="_blank" rel="noreferrer noopener">https://www.geoguessr.com</a><br>
-            <a href="https://gtaguessr.com" target="_blank" rel="noreferrer noopener">https://gtaguessr.com</a><br><br>
-            You may also be interested in <a href="https://lostgamer.io" target="_blank" rel="noreferrer noopener">https://lostgamer.io</a>.
-            They've made geoguessr games in other game maps including Skyrim (plus they have, like, actual servers and stuff).
-            I'm not affiliated with them at all, I just played the Elden Ring one and thought it was interesting to see
-            how full 3D streetview-esque locations work vs just images.<br>
-            <br>
-
-            Some people have recorded themselves playing the game which I think is neat, feel free to share if you do so too
+            Some people have recorded themselves playing the game which I think is neat, feel free to share if you do so
+            too (I have no affiliation with anyone here)
             <ul>
                 <li><a href="https://www.youtube.com/watch?v=hsCi-yBs4So" target="_blank" rel="noreferrer noopener">https://www.youtube.com/watch?v=hsCi-yBs4So</a></li>
                 <li><a href="https://www.youtube.com/watch?v=p3zM6UWy62c" target="_blank" rel="noreferrer noopener">https://www.youtube.com/watch?v=p3zM6UWy62c</a></li>
+                <li><a href="https://www.youtube.com/watch?v=2DzVvMuVkHE" target="_blank" rel="noreferrer noopener">https://www.youtube.com/watch?v=2DzVvMuVkHE</a></li>
             </ul>
             I have a playlist of some development videos <a href="https://www.youtube.com/playlist?list=PLYQYhgX21gJZuqsijO2oQpVIceI51E_Fy" target="_blank" rel="noreferrer noopener">here</a>.
         </p>
         <br>
         <h1>Controls</h1>
         <p>
-            Scroll to zoom, click and drag to pan - works for the map and game
-            image.<br>
+            Scroll to zoom, click and drag to pan - works for the map and game image.<br>
             Click on the map to place your guess.<br>
-            Shortcuts: Space to confirm a guess and move to the next round, shift
-            to show/hide the Pip-Boy
+            Shortcuts: space to confirm a guess and move to the next round, shift to show/hide the Pip-Boy
         </p>
         <br>
 
-        <h1>Known Bugs</h1>
+        <h1>Known Bugs and Issues</h1>
         <ul>
             <li>
                 Some world changes that take place in the game are shown on the map but not in the game images, as they
                 were taken on a fresh save. These include the Prydwen being over the airport, and the USS Constitution
-                being on top of the skyscraper (it is also shown as being on the bank where it starts).
+                being on top of the skyscraper (it is also shown as being on the bank where it starts). However, by the
+                time I had reached the UFO crash area, I had enough xp from discovering locations for that event to happen.
             </li>
             <li>
-                Some areas of water on the satellite map have visible borders between
-                differently coloured regions. Not much I can do, this is just how
-                they are in the actual game and the map rendering program renders
-                them as they are.
+                Some areas of water on the satellite map have visible borders between differently coloured regions. Not
+                much I can do, this is just how they are in the actual game and the map rendering program renders them
+                as they are.
             </li>
-            <li>Not really a bug but the pipboy style map
-                (i.e. the non-satellite one) is quite inaccurate in some places.
-                Also sometimes it flies to the side while zooming.</li>
+            <li>The pipboy style map (i.e. the non-satellite one) is quite inaccurate in some places. Also sometimes it
+                flies to the side while zooming.
+            </li>
+            <li>
+                I had a texture mod for making some collectible items glow which is present in some images.
+            </li>
         </ul>
-        <p>If you see something wrong with the game, there is a button to click
-            which will copy useful information. Just send that to me with a
-            description of what the issue seems to be, and maybe I'll even try
-            and fix it.
+        <p>If you see something wrong with the game, there is a button to click which will copy useful information. Just
+            send that to me with a description of what the issue seems to be, and maybe I'll even try and fix it.
         </p>
         <br>
 
         <h1>Please don't sue me Todd</h1>
         <p>
-            This is a fan made game. I am in no way related to Bethesda.
+            This is a fan made game. I am in no way related to Bethesda (or the original GeoGuessr).
         </p>
         <br>
         <h1>Credits</h1>
         <ul>
-            <li>Bethesda, for making Fallout 4. The waypoint markers and Pip-Boy were
-                traced/had images taken directly from in-game, and the in-game map,
-                page background and Preston icon were taken from the game too.</li>
-            <li><a href="https://leafletjs.com/" target="_blank" rel="noreferrer noopener">Leaflet.js</a> for the really
-                good map library</li>
-            <li>Emil, for creating the fancy dirt texture, telling me how web things work and helping test the game.</li>
-            <li><a href="https://www.reddit.com/user/According-Ad-8181/" target="_blank" rel="noreferrer noopener">u/According-Ad-8181</a>,
-                for telling me about the <a href="https://github.com/fo76utils/fo76utils" target="_blank" rel="noreferrer noopener">fo76utils tool</a>
-                for getting a good quality satellite map image, and helping me get
-                started using it</li>
-            <li>alexf13e (me) for taking the in-game images, editing images game assets
-                (Pip-Boy, waypoint markers), stealing ideas from other games,
-                and writing most of the code (though I probably don't want to
-                take credit for that). Stolen code at least has a comment to where it came from
+            <li>
+                Bethesda, for making Fallout 4. The waypoint markers and Pip-Boy were traced/had images taken directly
+                from in-game, and the in-game map, page background and Preston icon were taken from the game too.
+            </li>
+            <li>
+                <a href="https://github.com/fo76utils/fo76utils" target="_blank" rel="noreferrer noopener">fo76utils</a>
+                for getting a detailed satellite map image
+            </li>
+            <li>
+                <a href="https://leafletjs.com/" target="_blank" rel="noreferrer noopener">Leaflet.js</a> for the map
+                library
+            </li>
+            <li>
+                Emil, for creating the fancy dirt texture, telling me how web things work and helping test the game.
+            </li>
+            <li>
+                alexf13e (me) for taking the in-game images, editing images for game assets (Pip-Boy, waypoint markers),
+                stealing ideas from other games, and writing most of the code (direct copies/modifications are credited
+                in comments).
             </li>
         </ul>
-        <br>
+
+        Idea taken from these games, mainly gtaguessr for showing me the concept is actually fun and worth pursuing
+        for other games:<br>
+        <a href="https://www.geoguessr.com" target="_blank" rel="noreferrer noopener">https://www.geoguessr.com</a><br>
+        <a href="https://gtaguessr.com" target="_blank" rel="noreferrer noopener">https://gtaguessr.com</a><br><br>
 
         <h1>Updates</h1>
+        1.6.7 - 2nd October 2024
+        <ul>
+            <li>
+                Improvement for scroll wheels on image zooming
+            </li>
+            <li>
+                Added new tips
+            </li>
+            <li>
+                Removed tip randomness, so it is guaranteed to see them all
+            </li>
+            <li>
+                Minor re-wording in some places
+            </li>
+        </ul>
+
         1.6.6 - 13th May 2024
         <ul>
             <li>

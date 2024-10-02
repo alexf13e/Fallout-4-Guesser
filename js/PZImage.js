@@ -194,7 +194,21 @@ class PZImage
     {
         this.prevMouse = [event.x, event.y];
 
-        let sens = 0.05;
-        this.changeZoom(-event.deltaY * sens);
+        const sens = 0.05;
+
+        //smooth scroll wheels and touchpad gestures want to do lots of little scrolls by a little amount.
+        //chunky scroll wheels want to scroll in fewer bigger amounts.
+        //sens was tuned to feel good on my laptop touchpad, but on chunky scroll wheels it jumps immediately to fully
+        //zoomed in or out.
+        //so cap the max zoom amount so that it takes at least a few scroll clicks to reach max zoom no matter the
+        //scroll method. (could allow for user to set scroll sens, but having to return to home screen to change it is
+        //terrible and redesigning the settings to be in the main game screen is not worth it right now).
+        //in conclusion, this should give a good default that works ok for everyone
+        const zoomMag = Math.min(Math.abs(event.deltaY * sens), 1);
+        
+        //deltaY is positive for scroll down, which should zoom out. zooming out is considered a negative direction by zoom code.
+        const zoomDir = -Math.sign(event.deltaY);
+
+        this.changeZoom(zoomMag * zoomDir);
     }
 }

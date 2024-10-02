@@ -141,16 +141,21 @@ let scoreCap = 5000;
 
 const tipMessages = [
     "you can press shift to quickly show/hide the pipboy, and space to confirm a guess",
-    "you can get up to 2 hints per round from the radio tab, with increasing accuracy",
-    "the sun shines from the south in all images, and slight lighting is visible on the map",
-    "in survival mode, it's generally better to get a good-enough guess quickly than a perfect one, but very close guesses have a bonus effect",
-    "normal and endless mode keep track of the images shown to prevent seeing duplicates, but survival and custom modes start with a new set each game to allow for sharing the game code",
-    "the pip-boy shows the radiation level of the area you are in, as well as an indication of how difficult the location may be to guess",
-    "the images were taken at the start of the game, meaning world-changing events like the Prydwen arriving or the USS Constitution are not reflected in images (but are in the map, apologies for confusion)",
-    "survival mode offers the most xp per round, followed by normal and then endless",
+    "the timer is for the current location only, and will reset and the start of the next one",
+    "the pipboy icon will flash when you are almost out of time to guess",
+    "when the timer runs out, your guess will be confirmed automatically - if no guess is placed then you get 0 points",
+    "you can change screens in the top right of the pipboy at any time",
     "you can start a new game at any point by going to the inventory screen",
-    "you can drag and zoom the location image as well as the map",
-    "if you are really stuck, you can get a hint of the general area of the location in the radio tab"
+    "you can pan and zoom the location image as well as the map",
+    "up to 2 hints can be used per round from the radio tab, the second being more accurate",
+    "the pip-boy shows the radiation level of the area you are in, as well as a rough indication of how difficult the location may be to guess",
+    "the sun shines from the south in all images, and slight lighting is visible on the map",
+    "some world-changing events like the Prydwen arriving are not reflected in images (but are in the map, apologies for confusion)",
+    "in survival mode, it's generally better to get a good-enough guess quickly than a perfect one, but very close guesses have a bonus effect",
+    "normal and endless mode keep track of the images shown to prevent seeing duplicates, but survival and custom modes start with a new set each game",
+    "survival mode offers the most xp per round, followed by normal and then endless",
+    "all locations were reached by walking and jumping normally (no jetpack or cheating)",
+    "you can view your statistics in the STAT screen"
 ];
 
 
@@ -346,7 +351,7 @@ function newGame(repeat)
         "in The Commonwealth.<br><br>");
         addMessage("Click the icon in the bottom left to toggle showing/hiding the pipboy, and place a marker on the map " +
         "where you think the player was standing to take the image. Click somewhere else to change your mind, or confirm " +
-        "your guess to end the round.<br><br>");
+        "your guess to end the round. The time limit in the top right is per-round.<br><br>");
         addMessage("After 5 rounds, the game is over and you will be shown a summary of the locations and how far you were " +
         "from them.<br><br>");
         addMessage("If you feel completely lost, you can radio for help from Preston, " +
@@ -354,8 +359,16 @@ function newGame(repeat)
     }
     else
     {
-        let messageIndex = Math.floor(Math.random() * tipMessages.length);
-        addMessage("Tip: " + tipMessages[messageIndex] + "<br><br>");
+        let tipIndex = getLocalStorage("tipIndex");
+        if (!tipIndex)
+        {
+            tipIndex = 0;
+        }
+
+        addMessage("Tip: " + tipMessages[tipIndex] + "<br><br>");
+        
+        tipIndex = (tipIndex + 1) % tipMessages.length;
+        setLocalStorage("tipIndex", tipIndex);
     }
 
     if (gameParameters.type == gameModeTypes.SURVIVAL || gameParameters.isCustom)
