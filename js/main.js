@@ -150,7 +150,7 @@ const tipMessages = [
     "up to 2 hints can be used per round from the radio tab, the second being more accurate",
     "the pip-boy shows the radiation level of the area you are in, as well as a rough indication of how difficult the location may be to guess",
     "the sun shines from the south in all images, and slight lighting is visible on the map",
-    "some world-changing events like the Prydwen arriving are not reflected in images (but are in the map, apologies for confusion)",
+    "some world-changing events like the Prydwen arriving are not reflected in images",
     "in survival mode, it's generally better to get a good-enough guess quickly than a perfect one, but very close guesses have a bonus effect",
     "normal and endless mode keep track of the images shown to prevent seeing duplicates, but survival and custom modes start with a new set each game",
     "survival mode offers the most xp per round, followed by normal and then endless",
