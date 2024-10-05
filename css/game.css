@@ -159,7 +159,8 @@ ul
 
 #dvGameButtons
 {
-    display: grid;
+    display: flex;
+    flex-direction: row;
 }
 
 #dvGameInfo

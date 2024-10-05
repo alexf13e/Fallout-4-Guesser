@@ -47,7 +47,7 @@ const uiScreenMap = new PipUIElement(document.getElementById("dvScreenMap"), "bl
 const uiScreenRadio = new PipUIElement(document.getElementById("dvScreenRadio"), "block", ["radio"]);
 
 const uidvGameInfo = new PipUIElement(document.getElementById("dvGameInfo"), "grid", ["data", "map"]);
-const uidvGameButtons = new PipUIElement(document.getElementById("dvGameButtons"), "grid", ["data", "map"]);
+const uidvGameButtons = new PipUIElement(document.getElementById("dvGameButtons"), "flex", ["data", "map"]);
 
 const uipRoundCount = new PipUIElement(document.getElementById("pRoundCount"), "block", [], [gameStates.INITIALISED, gameStates.GUESSING]);
 const uipTimer = new PipUIElement(document.getElementById("pTimer"), "block", [], [gameStates.INITIALISED, gameStates.GUESSING], () => gameParameters.timeLimit != 0);
