@@ -532,7 +532,7 @@ function gameOver(reason)
     let deathMessage = currentImageData.deathMessage;
     if (deathMessage == "")
     {
-        const i = Math.floor(RNG(gameParameters.seed) * genericDeathMessages.length);
+        const i = Math.floor(RNG(parseInt(gameParameters.seed)) * genericDeathMessages.length);
         deathMessage = genericDeathMessages[i];
     }
 
@@ -727,7 +727,7 @@ function createRandomImageOrder()
     //https://bost.ocks.org/mike/shuffle/
     let m = availableImNums.length;
     let i;
-    let s = gameParameters.seed;
+    let s = parseInt(gameParameters.seed);
 
     // While there remain elements to shuffle…
     while (m) {
